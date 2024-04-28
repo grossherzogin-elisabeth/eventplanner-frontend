@@ -1,0 +1,46 @@
+@import 'tailwind.css';
+
+@import '@/lib/assets/css/dropdown.css';
+@import '@/lib/assets/css/loading-spinner.css';
+@import '@/lib/assets/css/dialog.css';
+@import '@/lib/assets/css/collapsible-pane.css';
+
+@import 'styling/inputs.css';
+@import 'styling/typography.css';
+@import 'styling/buttons.css';
+@import 'styling/card.css';
+@import 'styling/table.css';
+@import 'styling/pagination.css';
+@import 'styling/dialog.css';
+@import 'styling/scrollbar.css';
+
+@import 'domain/role.css';
+
+html {
+    box-sizing: border-box;
+    overflow-x: hidden;
+    --nav-height: 3rem;
+    --viewport-width: 100vw;
+    --viewport-height: 100vh;
+}
+
+html,
+body {
+    overscroll-behavior: none;
+}
+
+.h-nav {
+    height: var(--nav-height);
+}
+
+.pt-nav {
+    padding-top: var(--nav-height);
+}
+
+*:focus {
+    outline: none;
+}
+
+svg {
+    fill: currentColor;
+}

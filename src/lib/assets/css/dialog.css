@@ -1,0 +1,96 @@
+.dialog {
+    @apply flex flex-col shadow;
+    background-color: white;
+}
+
+.dialog-header {
+    @apply flex items-center justify-between px-8 py-4 text-white;
+    background-color: gray;
+}
+
+.dialog-close-button {
+    @apply p-1;
+}
+
+.dialog-buttons {
+    @apply flex justify-end space-x-4 px-8 py-4;
+    background-color: white;
+}
+
+.dialog-background {
+    --open-close-animation-duration: 0.25s;
+    --dialog-open-background: rgba(0, 0, 0, 0.6);
+    @apply fixed bottom-0 left-0 right-0 top-0 z-30;
+    @apply flex items-center justify-center;
+    animation: anim-dialog-background-close var(--open-close-animation-duration) ease-in;
+    background-color: rgba(0, 0, 0, 0);
+    /*backdrop-filter: blur(0);*/
+    pointer-events: none;
+}
+
+.dialog-background.open {
+    animation: anim-dialog-background-open var(--open-close-animation-duration) ease-in;
+    background-color: var(--dialog-open-background);
+    /*backdrop-filter: blur(4px);*/
+    pointer-events: auto;
+}
+
+@keyframes anim-dialog-background-open {
+    0% {
+        background-color: rgba(0, 0, 0, 0);
+        /*backdrop-filter: blur(0);*/
+    }
+    100% {
+        background-color: var(--dialog-open-background);
+        /*backdrop-filter: blur(4px);*/
+    }
+}
+
+@keyframes anim-dialog-background-close {
+    0% {
+        background-color: var(--dialog-open-background);
+        /*backdrop-filter: blur(4px);*/
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0);
+        /*backdrop-filter: blur(0);*/
+    }
+}
+
+.dialog-background.open .dialog-wrapper {
+    animation: anim-dialog-open var(--open-close-animation-duration) ease;
+    opacity: 1;
+}
+
+.dialog-wrapper {
+    animation: anim-dialog-close var(--open-close-animation-duration) ease;
+    opacity: 0;
+}
+
+@keyframes anim-dialog-open {
+    0% {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes anim-dialog-close {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+}

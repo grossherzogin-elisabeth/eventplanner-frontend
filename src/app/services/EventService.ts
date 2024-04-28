@@ -1,0 +1,249 @@
+import type { AuthRepository, EventRepository, UserRepository } from '@/app/adapter';
+import type { Event, EventKey, ImportError, PositionKey, SlotKey, User, UserKey } from '@/app/types';
+import { DateUtils } from '@/lib/utils';
+import type { Cache } from '@/lib/utils';
+
+export class EventService {
+    private readonly eventRepository: EventRepository;
+    private readonly authRepository: AuthRepository;
+    private readonly cache: Cache<EventKey, Event>;
+
+    constructor(params: {
+        eventRepository: EventRepository;
+        authRepository: AuthRepository;
+        eventCache: Cache<EventKey, Event>;
+    }) {
+        this.eventRepository = params.eventRepository;
+        this.authRepository = params.authRepository;
+        this.cache = params.eventCache;
+    }
+
+    public async getEvents(year: number): Promise<Event[]> {
+        let cached = await this.cache.findAll();
+        cached = cached
+            .filter((it) => it.start.getFullYear() === year)
+            .sort((a, b) => a.start.getTime() - b.start.getTime());
+        if (cached.length > 0) {
+            return cached;
+        }
+        return this.fetchEvents(year);
+    }
+
+    public async getEventByKey(year: number, eventKey: EventKey): Promise<Event> {
+        let event = await this.cache.findByKey(eventKey);
+        if (event) {
+            return event;
+        }
+        const events = await this.getEvents(year);
+        event = events.find((it) => it.key === eventKey);
+        if (event) {
+            return event;
+        }
+        throw new Error('not found');
+    }
+
+    public async getEventsByUser(year: number, userKey: UserKey): Promise<Event[]> {
+        const events = await this.getEvents(year);
+        return events.filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
+    }
+
+    public async getFutureEventsByUser(userKey: UserKey): Promise<Event[]> {
+        const now = new Date();
+        const events = await this.getEvents(now.getFullYear());
+        return events
+            .filter((evt) => evt.start > now)
+            .filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
+    }
+
+    public async updateEvent(eventKey: EventKey, event: Partial<Event>): Promise<Event> {
+        const savedEvent = await this.eventRepository.updateEvent(eventKey, event);
+        return this.updateCache(savedEvent);
+    }
+
+    public async createEvent(event: Event): Promise<Event> {
+        const savedEvent = await this.eventRepository.createEvent(event);
+        return this.updateCache(savedEvent);
+    }
+
+    public async joinEvent(event: Event, positionKey: PositionKey): Promise<Event> {
+        const user = this.authRepository.getSignedInUser();
+        if (!user) {
+            throw new Error('401');
+        }
+        const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
+        return this.updateCache(savedEvent);
+    }
+
+    public async leaveEvent(event: Event): Promise<Event> {
+        const user = this.authRepository.getSignedInUser();
+        if (!user) {
+            throw new Error('401');
+        }
+        const savedEvent = await this.eventRepository.leaveWaitingList(event.key, user.key);
+        return this.updateCache(savedEvent);
+    }
+
+    public doesEventMatchFilter(event: Event, filter: string): boolean {
+        const filterLc = filter.toLowerCase();
+        if (event.name.toLowerCase().includes(filterLc)) {
+            return true;
+        }
+        if (event.description.toLowerCase().includes(filterLc)) {
+            return true;
+        }
+        for (const location of event.locations) {
+            if (location.name.toLowerCase().includes(filterLc)) {
+                return true;
+            }
+            if (location.country?.toLowerCase().includes(filterLc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public doEventsHaveOverlappingDays(a?: Event, b?: Event): boolean {
+        if (a === undefined || b === undefined) {
+            return false;
+        }
+
+        const aStart = DateUtils.cropToPrecision(a.start, 'days').getTime();
+        const aEnd = DateUtils.cropToPrecision(a.end, 'days').getTime();
+        const bStart = DateUtils.cropToPrecision(b.start, 'days').getTime();
+        const bEnd = DateUtils.cropToPrecision(b.end, 'days').getTime();
+
+        return (aEnd >= bStart && aEnd <= bEnd) || (bEnd >= aStart && bEnd <= aEnd);
+    }
+
+    public async importEvents(year: number, file: Blob): Promise<ImportError[]> {
+        return this.eventRepository.importEvents(year, file);
+    }
+
+    public assignUserToSlot(event: Event, user: User, slotKey: SlotKey): Event {
+        const slot = event.slots.find((it) => it.key === slotKey);
+        if (!slot) {
+            throw new Error('Failed to resolve slot');
+        }
+        if (!slot.positionKeys.find((positionkey) => user.positionKeys.includes(positionkey))) {
+            throw new Error('User does not have the required position');
+        }
+        const registration = event.registrations.find((it) => it.userKey === user.key);
+        if (!registration) {
+            throw new Error('Failed to resolve user registration');
+        }
+        this.clearSlot(event, slotKey);
+        registration.slotKey = slotKey;
+        event.assignedUserCount++;
+        return event;
+    }
+
+    public assignGuestToSlot(event: Event, name: string, slotKey: SlotKey): Event {
+        const slot = event.slots.find((it) => it.key === slotKey);
+        if (!slot) {
+            throw new Error('Failed to resolve slot');
+        }
+        const registration = event.registrations.find((it) => it.name === name);
+        if (!registration) {
+            throw new Error('Failed to resolve guest registration');
+        }
+        this.clearSlot(event, slotKey);
+        registration.slotKey = slotKey;
+        event.assignedUserCount++;
+        return event;
+    }
+
+    public clearSlot(event: Event, slotKey: SlotKey) {
+        const currentRegistrationInSlot = event.registrations.find((it) => it.slotKey === slotKey);
+        if (currentRegistrationInSlot) {
+            currentRegistrationInSlot.slotKey = undefined;
+            event.assignedUserCount--;
+        }
+    }
+
+    public canUserBeAssignedToSlot(event: Event, user: User, slotKey: SlotKey): boolean {
+        const slot = event.slots.find((it) => it.key === slotKey);
+        if (!slot) {
+            return false;
+        }
+        const registration = event.registrations.find((it) => it.userKey === user.key);
+        if (!registration) {
+            return false;
+        }
+        return slot.positionKeys.find((positionkey) => user.positionKeys.includes(positionkey)) !== undefined;
+    }
+
+    public downloadCalendarEntry(event: Event): void {
+        // create ics file
+        const lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `UID:${event.key}@großherzogin-elisabeth.de`,
+            `LOCATION:${event.locations[0]?.address || event.locations[0]?.name}`,
+            `DTSTAMP:${this.formatIcsDate(new Date())}`,
+            'ORGANIZER;CN=Grossherzogin Elisabeth e.V.:MAILTO:office@grossherzogin-elisabeth.de',
+            `DTSTART:${this.formatIcsDate(event.start)}`,
+            `DTEND:${this.formatIcsDate(event.end)}`,
+            `SUMMARY:${event.name}`,
+            `DESCRIPTION:${event.description}`,
+            'END:VEVENT',
+            'BEGIN:VALARM',
+            'DESCRIPTION:REMINDER',
+            'TRIGGER;RELATED=START:-P1W', // reminder 1 week before event
+            'ACTION:DISPLAY',
+            'END:VALARM',
+            'END:VCALENDAR',
+        ];
+        // download ics file
+        try {
+            const downloadElement = document.createElement('a');
+            downloadElement.setAttribute(
+                'href',
+                'data:text/plain;charset=utf-8,' + encodeURIComponent(lines.join('\n'))
+            );
+            downloadElement.setAttribute('download', 'Event.ics');
+            downloadElement.style.display = 'none';
+            document.body.appendChild(downloadElement);
+            downloadElement.click();
+            document.body.removeChild(document);
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    private formatIcsDate(date: Date): string {
+        const year = String(date.getFullYear());
+        let month = String(date.getMonth() + 1);
+        if (month.length === 1) month = `0${month}`;
+        let day = String(date.getDate());
+        if (day.length === 1) day = `0${day}`;
+        let hour = String(date.getHours());
+        if (hour.length === 1) hour = `0${hour}`;
+        let minute = String(date.getMinutes());
+        if (minute.length === 1) minute = `0${minute}`;
+        return `${year}${month}${day}T${hour}${minute}00Z`;
+    }
+
+    private async fetchEvents(year: number): Promise<Event[]> {
+        const events = await this.eventRepository.findAll(year);
+        const signedInUser = this.authRepository.getSignedInUser();
+        events.forEach((evt) => {
+            const registration = evt.registrations.find((it) => it.userKey === signedInUser?.key);
+            if (registration?.slotKey) {
+                evt.signedInUserAssignedPosition = registration.positionKey;
+            } else if (registration) {
+                evt.signedInUserWaitingListPosition = registration.positionKey;
+            }
+        });
+        await this.cache.saveAll(events);
+        return events;
+    }
+
+    private async updateCache(event: Event): Promise<Event> {
+        if ((await this.cache.count()) > 0) {
+            return await this.cache.save(event);
+        }
+        return event;
+    }
+}

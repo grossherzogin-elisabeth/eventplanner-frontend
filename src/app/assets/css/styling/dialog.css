@@ -1,0 +1,3 @@
+.bg-dialog-header {
+    @apply bg-gradient-to-r from-primary-50 from-50% to-primary-100;
+}
