@@ -48,9 +48,6 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
 import NavbarFilter from '@/app/components/utils/NavbarFilter.vue';
 import { VInputText } from '@/lib/components';
-
-const showSearch = ref<boolean>(false);
 </script>

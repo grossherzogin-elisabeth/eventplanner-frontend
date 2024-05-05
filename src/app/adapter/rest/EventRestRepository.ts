@@ -97,18 +97,22 @@ export class EventRestRepository implements EventRepository {
         return [...map.values()].sort((a, b) => b.start.getTime() - a.start.getTime());
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async createEvent(event: Event): Promise<Event> {
         throw new Error('Diese Funktion ist noch nicht implementiert.');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async joinWaitingList(eventKey: EventKey, teamMemberKey: UserKey, positionKey: PositionKey): Promise<Event> {
         throw new Error('Diese Funktion ist noch nicht implementiert. Bitte melde dich vorerst weiterhin im Büro.');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async leaveWaitingList(eventKey: EventKey, teamMemberKey: UserKey): Promise<Event> {
         throw new Error('Diese Funktion ist noch nicht implementiert. Bitte melde dich vorerst weiterhin im Büro.');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async updateEvent(eventKey: EventKey, updateRequest: Partial<Event>): Promise<Event> {
         throw new Error('Diese Funktion ist noch nicht implementiert.');
     }

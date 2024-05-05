@@ -25,7 +25,7 @@
                 <section class="-mx-4">
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Email</VInputLabel>
-                        <VInputText required v-model="user.email" />
+                        <VInputText v-model="user.email" required />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Straße, Hausnr</VInputLabel>
@@ -65,15 +65,15 @@
                         <VInputLabel>Password</VInputLabel>
                         <VInputText required disabled type="password" model-value="loremipsumdolorsitamet" />
                     </div>
-                    <div class="text-sm mt-8 bg-primary-100 rounded-xl p-4">
+                    <div class="mt-8 rounded-xl bg-primary-100 p-4 text-sm">
                         <h2 class="mb-2">Hinweis zum Passwort ändern:</h2>
                         <p>
-                            Aktuell kannst du dein Passwort noch nicht direkt hier in der App ändern.
-                            Bitte nutze dafür vorerst die "Passwort vergessen" Funktion beim Login.
-                            Bei Fragen zu deinem Account wende dich gerne an
+                            Aktuell kannst du dein Passwort noch nicht direkt hier in der App ändern. Bitte nutze dafür
+                            vorerst die "Passwort vergessen" Funktion beim Login. Bei Fragen zu deinem Account wende
+                            dich gerne an
                             <a href="mailto:admin@grossherzogin-elisabeth.de" class="text-primary-600">
-                                admin@grossherzogin-elisabeth.de
-                            </a>.
+                                admin@grossherzogin-elisabeth.de </a
+                            >.
                         </p>
                     </div>
                 </section>
@@ -95,7 +95,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Context } from '@/app/Context';
-import ViewToolbar from '@/app/components/partials/ViewToolbar.vue';
 import VTabs from '@/app/components/utils/VTabs.vue';
 import { VInputDate, VInputSelect, VInputText } from '@/lib/components';
 import VInputLabel from '@/lib/components/input/VInputLabel.vue';

@@ -167,10 +167,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Permission, type Position, type PositionKey, ResolvedRegistration, type ResolvedSlot, Routes } from '@/app';
+import type { ResolvedRegistration} from '@/app';
+import { Permission, type Position, type PositionKey, type ResolvedSlot, Routes } from '@/app';
 import { Context } from '@/app/Context';
 import ContextMenuButton from '@/app/components/utils/ContextMenuButton.vue';
 import VTabs from '@/app/components/utils/VTabs.vue';
@@ -204,24 +205,25 @@ const filteredSlots = computed<ResolvedSlot[]>(() => {
 });
 
 const groupedSlots = computed<Record<string, ResolvedSlot[]>>(() => {
-    if (true) {
-        return { all: filteredSlots.value };
-    }
-    if (true) {
-        const required = filteredSlots.value.filter((it) => it.required || it.userName || it.userKey);
-        const optional = filteredSlots.value.filter((it) => !it.required && !it.userName && !it.userKey);
-        return {
-            required,
-            optional,
-        };
-    }
-    const grouped: Record<string, ResolvedSlot[]> = {};
-    filteredSlots.value.forEach((it) => {
-        const group = grouped[it.position.key] || [];
-        group.push(it);
-        grouped[it.position.key] = group;
-    });
-    return grouped;
+    // no grouping
+    return { all: filteredSlots.value };
+
+    // group by required
+    // const required = filteredSlots.value.filter((it) => it.required || it.userName || it.userKey);
+    // const optional = filteredSlots.value.filter((it) => !it.required && !it.userName && !it.userKey);
+    // return {
+    //     required,
+    //     optional,
+    // };
+
+    // group by role
+    // const grouped: Record<string, ResolvedSlot[]> = {};
+    // filteredSlots.value.forEach((it) => {
+    //     const group = grouped[it.position.key] || [];
+    //     group.push(it);
+    //     grouped[it.position.key] = group;
+    // });
+    // return grouped;
 });
 
 const summary = computed<Record<PositionKey, number>>(() => {
@@ -271,6 +273,7 @@ function handleDragStart(dragEvent: DragEvent, registration: ResolvedRegistratio
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function handleDragOver(dragEvent: DragEvent, targetSlot: ResolvedSlot) {
     if (dragEvent.dataTransfer) {
         dragEvent.preventDefault();

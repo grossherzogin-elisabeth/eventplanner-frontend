@@ -37,7 +37,7 @@ export class UserService {
     }
 
     public async getUserByKey(key: UserKey): Promise<User> {
-        let cached = await this.userCache.findByKey(key);
+        const cached = await this.userCache.findByKey(key);
         if (cached) {
             return cached;
         }
@@ -145,6 +145,10 @@ export class UserService {
             return undefined;
         }
         return await this.getUserByKey(registration.userKey);
+    }
+
+    public async importUsers(file: Blob): Promise<void> {
+        return this.userRepository.importUsers(file);
     }
 
     private unknownPosition(): Position {

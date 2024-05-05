@@ -39,5 +39,4 @@
     </div>
 </template>
 <script setup lang="ts">
-import ViewToolbar from '@/app/components/partials/ViewToolbar.vue';
 </script>

@@ -11,9 +11,9 @@
             <input
                 ref="input"
                 :value="props.modelValue"
-                @input="onInput($event)"
                 class="flex-grow bg-transparent placeholder-white placeholder-opacity-50"
                 :placeholder="placeholder || 'Einträge filtern'"
+                @input="onInput($event)"
             />
             <button @click="showSearch = false">
                 <i class="fa-solid fa-xmark text-white" />
@@ -44,6 +44,7 @@ function openSearch() {
     input.value?.focus();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function onInput(event: any) {
     emit('update:modelValue', event.target?.value);
 }

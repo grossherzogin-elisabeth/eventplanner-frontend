@@ -15,6 +15,7 @@ export enum Routes {
 
     UsersList = 'app_users',
     UserDetails = 'app_user-details',
+    UsersImport = 'app_users-import',
 
     Wiki = 'app_wiki',
 }

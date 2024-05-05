@@ -1,4 +1,4 @@
-import type { AuthRepository, EventRepository, UserRepository } from '@/app/adapter';
+import type { AuthRepository, EventRepository } from '@/app/adapter';
 import type { Event, EventKey, ImportError, PositionKey, SlotKey, User, UserKey } from '@/app/types';
 import { DateUtils } from '@/lib/utils';
 import type { Cache } from '@/lib/utils';

@@ -79,7 +79,7 @@
         >
             <!-- state info banner -->
             <section v-if="state" class="col-start-2 -mx-4 xl:mx-0">
-                <div class="fixed left-4 right-4 top-18 overflow-hidden rounded-2xl bg-white md:static">
+                <div class="top-18 fixed left-4 right-4 overflow-hidden rounded-2xl bg-white md:static">
                     <div :class="state.color">
                         <div class="flex items-center space-x-4 px-4 py-4 lg:px-8">
                             <i class="fa-solid" :class="state.icon" />
@@ -212,7 +212,7 @@
             </section>
 
             <!-- sticky add / remove user buttons -->
-            <div class="fixed bottom-0 right-0 pb-4 pr-3 flex justify-end md:hidden">
+            <div class="fixed bottom-0 right-0 flex justify-end pb-4 pr-3 md:hidden">
                 <button
                     v-if="event.signedInUserAssignedPosition"
                     class="btn-danger btn-floating"

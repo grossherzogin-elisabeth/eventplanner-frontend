@@ -38,8 +38,9 @@
                 <!--                <button class="btn-toolbar text-gray-400">Meine Reisen</button>-->
             </template>
             <template #right>
-                <RouterLink :to="{ name: Routes.EventsImport }" class="btn-toolbar">
+                <RouterLink :to="{ name: Routes.EventsImport }" class="btn-primary">
                     <i class="fa-solid fa-upload"></i>
+                    <span>Reisen importieren</span>
                 </RouterLink>
             </template>
         </ViewToolbar>

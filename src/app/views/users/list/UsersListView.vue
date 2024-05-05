@@ -14,10 +14,10 @@
                 </VInputText>
                 <div class="hidden flex-grow md:block"></div>
                 <div class="hidden items-stretch justify-end space-x-2 md:flex">
-                    <button class="btn-primary flex-grow whitespace-nowrap">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span>Nutzer erstellen</span>
-                    </button>
+                    <RouterLink :to="{ name: Routes.UsersImport }" class="btn-primary flex-grow whitespace-nowrap">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>Nutzer importieren</span>
+                    </RouterLink>
                 </div>
             </div>
         </div>
@@ -70,9 +70,7 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Context } from '@/app/Context';
-import ViewToolbar from '@/app/components/partials/ViewToolbar.vue';
 import NavbarFilter from '@/app/components/utils/NavbarFilter.vue';
-import { Permission } from '@/app/types';
 import type { User } from '@/app/types';
 import { Routes } from '@/app/views/Routes';
 import { VInputText, VTable } from '@/lib/components';
@@ -82,7 +80,6 @@ import type { Selectable } from '@/shared/types/Selectable';
 const ctx = useContext<Context>(Context);
 const router = useRouter();
 
-const showSearch = ref<boolean>(false);
 const filter = ref<string>('');
 const crewMembers = ref<(User & Selectable)[]>([]);
 const filteredCrewMembers = computed<(User & Selectable)[]>(() =>

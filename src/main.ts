@@ -11,7 +11,7 @@ app.use(i18n);
 app.use(ctx, { router, i18n, config });
 app.use(router); // register router after context, because routes are added dynamically
 
-app.config.errorHandler = (err, instance, info) => {
+app.config.errorHandler = (err) => {
     console.error(err);
     alert(err);
 };

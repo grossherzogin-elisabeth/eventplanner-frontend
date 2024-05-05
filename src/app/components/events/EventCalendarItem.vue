@@ -132,11 +132,9 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import type { Event } from '@/app';
-import { EventState, Permission, Routes } from '@/app';
-import { Context } from '@/app/Context';
+import { EventState, Routes } from '@/app';
 import CountryFlag from '@/app/components/utils/CountryFlag.vue';
 import { VDropdownWrapper } from '@/lib/components';
-import { useContext } from '@/lib/composables';
 import { DateTimeFormat } from '@/shared/types';
 
 interface Props {
@@ -148,10 +146,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const ctx = useContext<Context>(Context);
 const i18n = useI18n();
 const route = useRoute();
-const user = ctx.auth.getSignedInUser();
 
 const showDropdown = ref<boolean>(false);
 

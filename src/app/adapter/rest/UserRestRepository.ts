@@ -49,4 +49,18 @@ export class UserRestRepository implements UserRepository {
             positionKeys: representation.positions as PositionKey[],
         };
     }
+
+    public async importUsers(file: Blob): Promise<void> {
+        const formParams = new FormData();
+        formParams.append('file', file);
+        // don't add 'Content-Type': 'multipart/form-data' header, as this will break the upload!
+        const response = await fetch('/api/v1/import/users', {
+            method: 'POST',
+            credentials: 'include',
+            body: formParams,
+        });
+        if (!response.ok) {
+            throw response;
+        }
+    }
 }
