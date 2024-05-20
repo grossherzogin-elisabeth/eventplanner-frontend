@@ -13,6 +13,5 @@ app.use(router); // register router after context, because routes are added dyna
 
 app.config.errorHandler = (err) => {
     console.error(err);
-    alert(err);
 };
 app.mount('#app');
