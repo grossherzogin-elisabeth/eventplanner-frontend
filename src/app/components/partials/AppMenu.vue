@@ -31,13 +31,13 @@
                     </li>
                 </ul>
             </li>
-            <li v-if="user.permissions.includes(Permission.READ_USERS)" class="menu-item">
+            <li v-if="user.permissions.includes(Permission.READ_USER_DETAILS)" class="menu-item">
                 <RouterLink :to="{ name: Routes.UsersList }">
                     <i class="fa-solid fa-users"></i>
                     <span>Nutzerverwaltung</span>
                 </RouterLink>
             </li>
-            <li class="menu-item">
+            <li class="menu-item hidden ">
                 <RouterLink :to="{ name: Routes.Wiki }">
                     <i class="fa-solid fa-book"></i>
                     <span>Wiki</span>
@@ -58,7 +58,7 @@
         </ul>
         <h2 class="menu-subheading hidden">Rechtliches</h2>
         <ul class="menu-list my-4 hidden">
-            <li v-if="user.permissions.includes(Permission.READ_USERS)" class="menu-item">
+            <li class="menu-item">
                 <RouterLink :to="{ name: Routes.Privacy }">
                     <i class="fa-solid fa-user-shield"></i>
                     <span>Datenschutzerklärung</span>

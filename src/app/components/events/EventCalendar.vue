@@ -236,11 +236,15 @@ function fillEvents(): void {
 
         // add user event relation class
         if (event.signedInUserAssignedPosition) {
-            calendarDayEvent.class = 'assigned';
+            calendarDayEvent.class += 'assigned';
         } else if (event.signedInUserWaitingListPosition) {
-            calendarDayEvent.class = 'waiting-list';
+            calendarDayEvent.class += 'waiting-list';
         } else if (event.assignedUserCount >= 23) {
-            calendarDayEvent.class = 'full';
+            calendarDayEvent.class += 'full';
+        }
+
+        if (event.start.getTime() < new Date().getTime()) {
+            calendarDayEvent.class += ' in-past'
         }
 
         if (calendarDayEvent.durationInMonth < 1) {

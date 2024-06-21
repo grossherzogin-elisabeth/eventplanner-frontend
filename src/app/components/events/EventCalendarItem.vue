@@ -30,7 +30,7 @@
             @close="showDropdown = false"
         >
             <div class="w-full px-2">
-                <div class="rounded-2xl bg-primary-100 p-4 px-8 shadow-xl">
+                <div class="rounded-2xl bg-white p-4 px-8 shadow-xl">
                     <div class="-mr-4 mb-4 flex items-center justify-end">
                         <button
                             class="rounded-lg px-2 py-1 hover:bg-gray-100"
@@ -209,5 +209,8 @@ init();
 .calendar-event-entry.small {
     @apply flex items-center py-0;
     font-size: 0.6rem;
+}
+.calendar-event-entry.in-past {
+    @apply bg-primary-800 bg-opacity-35;
 }
 </style>

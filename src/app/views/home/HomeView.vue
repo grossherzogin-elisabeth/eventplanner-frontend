@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="hidden w-96 flex-grow p-16 xl:block">
-                <div class="sticky top-16 z-10">
+                <div class="sticky top-16 z-10 hidden">
                     <div class="ml-auto max-w-lg">
                         <!--                        <h2 class="text-sm pl-8 mb-4">News</h2>-->
                         <div v-for="i in 3" :key="i" class="mb-4 rounded-2xl bg-gray-200 p-8">

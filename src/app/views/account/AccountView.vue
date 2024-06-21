@@ -54,7 +54,7 @@
             <template #[Tab.ACCOUNT_CREDENTIALS]>
                 <section class="-mx-4">
                     <div class="mb-2 md:w-1/2">
-                        <VInputLabel>Key</VInputLabel>
+                        <VInputLabel>ID</VInputLabel>
                         <VInputText v-model="user.key" disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
@@ -65,7 +65,7 @@
                         <VInputLabel>Password</VInputLabel>
                         <VInputText required disabled type="password" model-value="loremipsumdolorsitamet" />
                     </div>
-                    <div class="mt-8 rounded-xl bg-primary-100 p-4 text-sm">
+                    <div class="md:w-1/2 mt-8 rounded-xl bg-primary-100 p-4 text-sm">
                         <h2 class="mb-2">Hinweis zum Passwort ändern:</h2>
                         <p>
                             Aktuell kannst du dein Passwort noch nicht direkt hier in der App ändern. Bitte nutze dafür
@@ -117,7 +117,7 @@ const genderOptions: InputSelectOption[] = [
 ];
 
 const tabs = [Tab.ACCOUNT_CREDENTIALS, Tab.ACCOUNT_DATA, Tab.ACCOUNT_CONTACT_DATA];
-const tab = ref<Tab>(Tab.ACCOUNT_DATA);
+const tab = ref<Tab>(Tab.ACCOUNT_CREDENTIALS);
 
 // const riggOptions: InputSelectOption[] = [
 //     { value: 'ja', label: 'Je höher desto besser' },

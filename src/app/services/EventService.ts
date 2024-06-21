@@ -1,6 +1,6 @@
 import type { AuthRepository, EventRepository } from '@/app/adapter';
 import type { Event, EventKey, ImportError, PositionKey, SlotKey, User, UserKey } from '@/app/types';
-import { DateUtils } from '@/lib/utils';
+import { DateUtils, Formatter } from '@/lib/utils';
 import type { Cache } from '@/lib/utils';
 
 export class EventService {
@@ -70,8 +70,19 @@ export class EventService {
         if (!user) {
             throw new Error('401');
         }
-        const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
-        return this.updateCache(savedEvent);
+        try {
+            const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
+            return this.updateCache(savedEvent);
+        } catch(e) {
+            const title = `Anmeldung: ${event.name} am ${Formatter.formatDate(event.start)}`;
+            const message = `Moin liebes Büro Team,
+
+Ich möchte mich gerne für die Reise "${event.name}" am ${Formatter.formatDate(event.start)} auf die Warteliste setzen lassen. Kontaktiert mich gerne, wenn hier noch ein Platz frei ist oder wird.
+
+Viele Grüße,`;
+            this.openEmail(title, message);
+            return event;
+        }
     }
 
     public async leaveEvent(event: Event): Promise<Event> {
@@ -79,8 +90,19 @@ export class EventService {
         if (!user) {
             throw new Error('401');
         }
-        const savedEvent = await this.eventRepository.leaveWaitingList(event.key, user.key);
-        return this.updateCache(savedEvent);
+        try {
+            const savedEvent = await this.eventRepository.leaveWaitingList(event.key, user.key);
+            return this.updateCache(savedEvent);
+        } catch (e) {
+            const title = `Absage: ${event.name} am ${Formatter.formatDate(event.start)}`;
+            const message = `Moin liebes Büro Team,
+
+Leider kann ich an der Reise "${event.name}" am ${Formatter.formatDate(event.start)} nicht teilnehmen. Bitte streicht mich von der Crew Liste.
+
+Viele Grüße,`;
+            this.openEmail(title, message);
+            return event;
+        }
     }
 
     public doesEventMatchFilter(event: Event, filter: string): boolean {
@@ -245,5 +267,10 @@ export class EventService {
             return await this.cache.save(event);
         }
         return event;
+    }
+
+    private openEmail(subject: string, body: string): void {
+        const email = `mailto:office@grossherzogin-elisabeth.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(email, '_blank');
     }
 }

@@ -38,7 +38,7 @@
                 <!--                <button class="btn-toolbar text-gray-400">Meine Reisen</button>-->
             </template>
             <template #right>
-                <RouterLink :to="{ name: Routes.EventsImport }" class="btn-primary">
+                <RouterLink v-if="user.permissions.includes(Permission.WRITE_EVENTS)" :to="{ name: Routes.EventsImport }" class="btn-primary">
                     <i class="fa-solid fa-upload"></i>
                     <span>Reisen importieren</span>
                 </RouterLink>
@@ -66,7 +66,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { Event } from '@/app';
+import { Event, Permission } from '@/app';
 import { EventQuickFilter, Routes } from '@/app';
 import { Context } from '@/app/Context';
 import EventCalendar from '@/app/components/events/EventCalendar.vue';
