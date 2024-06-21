@@ -244,7 +244,7 @@ function fillEvents(): void {
         }
 
         if (event.start.getTime() < new Date().getTime()) {
-            calendarDayEvent.class += ' in-past'
+            calendarDayEvent.class += ' in-past';
         }
 
         if (calendarDayEvent.durationInMonth < 1) {

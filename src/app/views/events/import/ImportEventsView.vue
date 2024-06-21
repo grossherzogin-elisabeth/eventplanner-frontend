@@ -57,7 +57,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import type { ImportError} from '@/app';
+import type { ImportError } from '@/app';
 import { Routes } from '@/app';
 import { Context } from '@/app/Context';
 import VTable from '@/lib/components/table/VTable.vue';

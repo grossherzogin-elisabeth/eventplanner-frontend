@@ -73,7 +73,7 @@ export class EventService {
         try {
             const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
             return this.updateCache(savedEvent);
-        } catch(e) {
+        } catch (e) {
             const title = `Anmeldung: ${event.name} am ${Formatter.formatDate(event.start)}`;
             const message = `Moin liebes Büro Team,
 

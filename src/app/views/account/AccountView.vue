@@ -65,7 +65,7 @@
                         <VInputLabel>Password</VInputLabel>
                         <VInputText required disabled type="password" model-value="loremipsumdolorsitamet" />
                     </div>
-                    <div class="md:w-1/2 mt-8 rounded-xl bg-primary-100 p-4 text-sm">
+                    <div class="mt-8 rounded-xl bg-primary-100 p-4 text-sm md:w-1/2">
                         <h2 class="mb-2">Hinweis zum Passwort ändern:</h2>
                         <p>
                             Aktuell kannst du dein Passwort noch nicht direkt hier in der App ändern. Bitte nutze dafür

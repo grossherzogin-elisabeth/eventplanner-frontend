@@ -170,7 +170,7 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import type { ResolvedRegistration} from '@/app';
+import type { ResolvedRegistration } from '@/app';
 import { Permission, type Position, type PositionKey, type ResolvedSlot, Routes } from '@/app';
 import { Context } from '@/app/Context';
 import ContextMenuButton from '@/app/components/utils/ContextMenuButton.vue';

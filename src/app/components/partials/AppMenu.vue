@@ -37,7 +37,7 @@
                     <span>Nutzerverwaltung</span>
                 </RouterLink>
             </li>
-            <li class="menu-item hidden ">
+            <li class="menu-item hidden">
                 <RouterLink :to="{ name: Routes.Wiki }">
                     <i class="fa-solid fa-book"></i>
                     <span>Wiki</span>

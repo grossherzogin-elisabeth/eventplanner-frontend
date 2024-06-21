@@ -38,7 +38,11 @@
                 <!--                <button class="btn-toolbar text-gray-400">Meine Reisen</button>-->
             </template>
             <template #right>
-                <RouterLink v-if="user.permissions.includes(Permission.WRITE_EVENTS)" :to="{ name: Routes.EventsImport }" class="btn-primary">
+                <RouterLink
+                    v-if="user.permissions.includes(Permission.WRITE_EVENTS)"
+                    :to="{ name: Routes.EventsImport }"
+                    class="btn-primary"
+                >
                     <i class="fa-solid fa-upload"></i>
                     <span>Reisen importieren</span>
                 </RouterLink>

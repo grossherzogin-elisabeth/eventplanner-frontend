@@ -15,7 +15,11 @@
                 </p>
             </div>
             <div v-if="event" class="flex items-stretch justify-end space-x-2">
-                <RouterLink v-if="user.permissions.includes(Permission.WRITE_EVENTS)" :to="{ name: Routes.EventEdit }" class="btn-secondary">
+                <RouterLink
+                    v-if="user.permissions.includes(Permission.WRITE_EVENTS)"
+                    :to="{ name: Routes.EventEdit }"
+                    class="btn-secondary"
+                >
                     <i class="fa-solid fa-edit"></i>
                 </RouterLink>
                 <button class="btn-secondary" @click="ctx.events.downloadCalendarEntry(event)">
@@ -150,7 +154,7 @@
 
             <!-- crew -->
             <section class="col-start-1 row-span-6 -mx-4 md:row-start-1 md:mx-0">
-                <h2 class="mb-2 md:mb-6 ml-4 flex space-x-4 md:ml-0">
+                <h2 class="mb-2 ml-4 flex space-x-4 md:mb-6 md:ml-0">
                     <button :class="{ 'text-primary-600': tab === Tab.Team }" @click="tab = Tab.Team">
                         Crew ({{ event.assignedUserCount }})
                     </button>
@@ -201,7 +205,7 @@
             </section>
 
             <!-- documents -->
-            <section class="-mx-4 md:col-start-2 xl:mx-0 hidden">
+            <section class="-mx-4 hidden md:col-start-2 xl:mx-0">
                 <h2 class="mb-2 ml-4 lg:ml-8">Dokumente</h2>
                 <div class="rounded-2xl bg-primary-100 p-4 lg:px-8">
                     <p v-for="doc in documentsMock" :key="doc" class="mb-1 flex items-center space-x-4">
