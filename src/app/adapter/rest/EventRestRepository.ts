@@ -123,8 +123,8 @@ export class EventRestRepository implements EventRepository {
             name: eventRepresentation.name,
             description: eventRepresentation.description,
             state: eventRepresentation.state as EventState,
-            start: new Date(eventRepresentation.start),
-            end: new Date(eventRepresentation.end),
+            start: EventRestRepository.parseDate(eventRepresentation.start),
+            end: EventRestRepository.parseDate(eventRepresentation.end),
             registrations: eventRepresentation.registrations.map((it) => ({
                 positionKey: it.positionKey,
                 userKey: it.userKey,
@@ -144,6 +144,14 @@ export class EventRestRepository implements EventRepository {
             })),
             assignedUserCount: eventRepresentation.registrations.filter((it) => it.slotKey).length,
         };
+    }
+
+    private static parseDate(date: string): Date {
+        // js cannot parse an ISO date time like 2024-06-25T00:00+02:00[Europe/Berlin]
+        if (date.includes('[')) {
+            return new Date(date.substring(0, date.indexOf('[')));
+        }
+        return new Date(date);
     }
 
     private generateWorkEvent(date: Date): Event {
