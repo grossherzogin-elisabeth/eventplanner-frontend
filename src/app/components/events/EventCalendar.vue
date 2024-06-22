@@ -1,6 +1,16 @@
 <template>
     <div class="flex h-full flex-1 flex-col">
-        <div class="flex h-full flex-1 items-stretch">
+        <div class="relative flex h-full flex-1 items-stretch">
+            <div class="absolute left-2 top-1 z-30 hidden h-10 w-10 lg:block xl:-top-2">
+                <button class="btn-back h-full w-full" @click="scrollLeft()">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+            <div class="absolute right-6 top-1 z-30 hidden h-10 w-10 lg:block xl:-top-2">
+                <button class="btn-back h-full w-full" @click="scrollRight()">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
             <div ref="calendar" class="calendar" :style="calendarStyle">
                 <div v-for="m in months.entries()" :key="m[0]" class="calendar-month">
                     <div class="calendar-header">
@@ -204,6 +214,10 @@ function buildCalender(year: number): void {
 function fillEvents(): void {
     for (let i = 0; i < props.events.length; i++) {
         const event: Event = props.events[i];
+        if (!event?.start.getMonth()) {
+            console.log(event);
+            continue;
+        }
         const daysOfMonth = months.value.get(event.start.getMonth());
         if (!daysOfMonth) {
             console.error(`Missing month with index ${event.start.getMonth()}!`);
@@ -281,6 +295,24 @@ function fillEvents(): void {
         }
 
         day.events.push(calendarDayEvent);
+    }
+}
+
+function scrollLeft(): void {
+    if (calendar.value) {
+        const w = calendar.value.scrollWidth;
+        let l = calendar.value.scrollLeft;
+        l = Math.max(l - w / 12, 0);
+        calendar.value.scrollTo({ left: l, behavior: 'smooth' });
+    }
+}
+
+function scrollRight(): void {
+    if (calendar.value) {
+        const w = calendar.value.scrollWidth;
+        let l = calendar.value.scrollLeft;
+        l = Math.min(l + w / 12, w);
+        calendar.value.scrollTo({ left: l, behavior: 'smooth' });
     }
 }
 

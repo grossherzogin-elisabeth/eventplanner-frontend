@@ -33,10 +33,6 @@
                     </template>
                 </ContextMenuButton>
             </template>
-            <template #center>
-                <!--                <button class="btn-toolbar text-primary-600">Alle Reisen</button>-->
-                <!--                <button class="btn-toolbar text-gray-400">Meine Reisen</button>-->
-            </template>
             <template #right>
                 <RouterLink
                     v-if="user.permissions.includes(Permission.WRITE_EVENTS)"
@@ -48,20 +44,9 @@
                 </RouterLink>
             </template>
         </ViewToolbar>
-        <div class="flex flex-1 flex-col overflow-hidden">
-            <!--        <div class="flex relative z-50">-->
-            <!--            <button v-if="!calendarView" class="btn-toolbar" @click="calendarView = true">-->
-            <!--                <i class="fa-solid fa-calendar"></i>-->
-            <!--            </button>-->
-            <!--            <button v-else class="btn-toolbar" @click="calendarView = false">-->
-            <!--                <i class="fa-solid fa-list"></i>-->
-            <!--            </button>-->
-            <!--        </div>-->
+        <div class="flex flex-1 flex-col">
             <template v-if="events">
-                <!--                <EventList class="sm:hidden" :events="events" @update:quick-filter="fetchEvents($event)" />-->
                 <EventCalendar class="bg-primary-50" :events="events" @update:quick-filter="fetchEvents($event)" />
-                <!--            <EventCalendar v-if="calendarView" class="" :events="events" @update:quick-filter="fetchEvents($event)" />-->
-                <!--            <EventList v-else :events="events" @update:quick-filter="fetchEvents($event)" />-->
             </template>
         </div>
     </div>

@@ -3,8 +3,8 @@
         :to="{ name: Routes.EventDetails, params: { year: props.event.start.getFullYear(), key: props.event.key } }"
         class="block hover:no-underline"
     >
-        <div class="overflow-hidden rounded-2xl bg-primary-100 text-primary-950">
-            <div class="flex flex-col px-4 py-3">
+        <div class="overflow-hidden rounded-2xl bg-primary-100 text-primary-950 hover:bg-primary-200 hover:shadow-xl">
+            <div class="flex flex-col px-4 py-3 transition-all hover:pl-6">
                 <h3 class="mb-2 flex items-center space-x-2">
                     <span v-if="props.event.state === EventState.Canceled" class="text-red-500 line-through">
                         {{ props.event.name }}
@@ -34,22 +34,14 @@
                 </div>
             </div>
 
-            <div class="mb-2 flex px-4 py-2">
-                <p v-if="props.event.state === EventState.Canceled" class="flex items-center space-x-2 text-red-600">
+            <div v-if="props.event.state === EventState.Canceled" class="mb-2 flex px-4 py-2">
+                <p class="flex items-center space-x-2 text-red-600">
                     <i class="fa-solid fa-circle-xmark w-4" />
                     <span class="text-sm font-bold">{{ $t('app.event-details.note-canceled') }}</span>
                 </p>
-                <p
-                    v-else-if="props.event.signedInUserAssignedPosition"
-                    class="flex hidden items-center space-x-2 text-green-700"
-                >
-                    <i class="fa-solid fa-circle-check w-4" />
-                    <span class="text-sm font-bold">{{ $t('app.event-details.note-assigned') }}</span>
-                </p>
-                <p
-                    v-else-if="props.event.signedInUserWaitingListPosition"
-                    class="flex items-center space-x-2 text-orange-400"
-                >
+            </div>
+            <div v-else-if="props.event.signedInUserWaitingListPosition" class="mb-2 flex px-4 py-2">
+                <p class="flex items-center space-x-2 text-orange-400">
                     <i class="fa-solid fa-circle-info w-4" />
                     <span class="text-sm font-bold">{{ $t('app.event-details.note-waitinglist') }}</span>
                 </p>

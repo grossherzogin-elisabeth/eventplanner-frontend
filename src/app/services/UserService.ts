@@ -54,13 +54,14 @@ export class UserService {
         }
         const positions = await this.getPositions();
         return users.sort((a, b) => {
-            const prioA = a.positionKeys
-                .map((key) => positions.find((it) => it.key === key))
-                .reduce((prio, it) => Math.max(prio, it?.prio || 0), 0);
-            const prioB = b.positionKeys
-                .map((key) => positions.find((it) => it.key === key))
-                .reduce((prio, it) => Math.max(prio, it?.prio || 0), 0);
-            return prioA - prioB || a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName);
+            // const prioA = a.positionKeys
+            //     .map((key) => positions.find((it) => it.key === key))
+            //     .reduce((prio, it) => Math.max(prio, it?.prio || 0), 0);
+            // const prioB = b.positionKeys
+            //     .map((key) => positions.find((it) => it.key === key))
+            //     .reduce((prio, it) => Math.max(prio, it?.prio || 0), 0);
+            // return prioA - prioB || a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName);
+            return a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName);
         });
     }
 

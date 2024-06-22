@@ -14,7 +14,7 @@ export enum Month {
     SEPTEMBER,
     OCTOBER,
     NOVEMBER,
-    DEZEMBER,
+    DECEMBER,
 }
 
 export interface DateDiff {

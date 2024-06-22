@@ -5,7 +5,7 @@
             <li class="menu-item">
                 <RouterLink :to="{ name: Routes.Home }">
                     <i class="fa-solid fa-home"></i>
-                    <span>Meine Reisen</span>
+                    <span>Meine nächsten Reisen</span>
                 </RouterLink>
             </li>
             <li

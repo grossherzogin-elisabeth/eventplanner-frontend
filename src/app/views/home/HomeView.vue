@@ -12,7 +12,7 @@
                 <div v-else class="-mt-10">
                     <div v-for="entry in eventsByMonth.entries()" :key="entry[0]" class="pb-8">
                         <div class="pointer-events-none sticky top-16 z-10 flex pb-1 pt-2 xl:top-8">
-                            <h2 class="inline-block">
+                            <h2 class="inline-block text-primary-800 text-opacity-50">
                                 {{ entry[0] }}
                             </h2>
                         </div>
@@ -55,6 +55,7 @@ import type { Event } from '@/app';
 import { Context } from '@/app/Context';
 import EventCard from '@/app/components/events/EventCard.vue';
 import { useContext } from '@/lib/composables';
+import { Month } from '@/lib/utils';
 import { DateTimeFormat } from '@/shared/types';
 
 const ctx = useContext<Context>(Context);
@@ -70,13 +71,35 @@ const filteredEvents = computed<Event[]>(() =>
 
 const eventsByMonth = computed<Map<string, Event[]>>(() =>
     filteredEvents.value.reduce((map, it) => {
-        const groupName = i18n.d(it.start, DateTimeFormat.MonthAndYear);
+        let groupName = i18n.d(it.start, DateTimeFormat.MonthAndYear);
+        if (isThisMonth(it.start)) {
+            groupName = 'Diesen Monat';
+        } else if (isNextMonth(it.start)) {
+            groupName = 'Nächsten Monat';
+        }
+
         const groupedEvents = map.get(groupName) || [];
         groupedEvents.push(it);
         map.set(groupName, groupedEvents);
         return map;
     }, new Map<string, Event[]>())
 );
+
+function isThisMonth(date: Date): boolean {
+    const now = new Date();
+    return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+}
+
+function isNextMonth(date: Date): boolean {
+    const now = new Date();
+    if (date.getFullYear() === now.getFullYear()) {
+        return date.getMonth() === now.getMonth() + 1;
+    }
+    if (date.getFullYear() === now.getFullYear() + 1) {
+        return date.getMonth() === Month.JANUARY && now.getMonth() === Month.DECEMBER;
+    }
+    return false;
+}
 
 function init(): void {
     fetchEvents();
