@@ -12,6 +12,7 @@
                         <i class="fa-solid fa-magnifying-glass ml-4 text-primary-900 text-opacity-25" />
                     </template>
                 </VInputText>
+                <VInputCheckBox v-model="filterOnlyActive" label="Nur Stammcrew mit Anmeldungen" />
                 <div class="hidden flex-grow md:block"></div>
                 <div class="hidden items-stretch justify-end space-x-2 md:flex">
                     <RouterLink :to="{ name: Routes.UsersImport }" class="btn-primary flex-grow whitespace-nowrap">
@@ -34,6 +35,8 @@
                         <th class="hidden md:table-cell" data-sortby="lastName">Nachname</th>
                         <th>Zertifikate</th>
                         <th data-sortby="role">Rolle</th>
+                        <th data-sortby="eventCount">Reisen</th>
+                        <th data-sortby="registrationCount">Warteliste</th>
                     </template>
                     <template #row="{ item }">
                         <td class="whitespace-nowrap font-semibold">
@@ -60,6 +63,16 @@
                                 </span>
                             </div>
                         </td>
+                        <td>
+                            <span class="rounded-full bg-primary-200 px-4 py-1 text-xs font-bold">
+                                {{ item.eventCount || '-' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="rounded-full bg-yellow-200 px-4 py-1 text-xs font-bold">
+                                {{ item.registrationCount || '-' }}
+                            </span>
+                        </td>
                     </template>
                 </VTable>
             </div>
@@ -73,17 +86,27 @@ import { Context } from '@/app/Context';
 import NavbarFilter from '@/app/components/utils/NavbarFilter.vue';
 import type { User } from '@/app/types';
 import { Routes } from '@/app/views/Routes';
-import { VInputText, VTable } from '@/lib/components';
+import { VInputCheckBox, VInputText, VTable } from '@/lib/components';
 import { useContext } from '@/lib/composables';
 import type { Selectable } from '@/shared/types/Selectable';
+
+interface UserRegistrations extends User, Selectable {
+    eventCount?: number;
+    registrationCount?: number;
+}
 
 const ctx = useContext<Context>(Context);
 const router = useRouter();
 
 const filter = ref<string>('');
-const crewMembers = ref<(User & Selectable)[]>([]);
-const filteredCrewMembers = computed<(User & Selectable)[]>(() =>
-    crewMembers.value.filter((it) => ctx.users.doesUserMatchFilter(it, filter.value))
+const filterOnlyActive = ref<boolean>(false);
+const crewMembers = ref<UserRegistrations[]>([]);
+const filteredCrewMembers = computed<UserRegistrations[]>(() =>
+    crewMembers.value.filter(
+        (it) =>
+            ctx.users.doesUserMatchFilter(it, filter.value) &&
+            (!filterOnlyActive.value || it.registrationCount || it.eventCount)
+    )
 );
 
 function init(): void {
@@ -95,7 +118,15 @@ function editUser(user: User): void {
 }
 
 async function fetchCrewMembers(): Promise<void> {
-    crewMembers.value = await ctx.users.getUsers();
+    const users: UserRegistrations[] = await ctx.users.getUsers();
+    const events = await ctx.events.getEvents(new Date().getFullYear());
+    const registrations = events.flatMap((it) => it.registrations);
+    users.forEach((user: UserRegistrations) => {
+        const userRegistrations = registrations.filter((it) => it.userKey === user.key);
+        user.eventCount = userRegistrations.filter((it) => it.slotKey).length;
+        user.registrationCount = userRegistrations.length - user.eventCount;
+    });
+    crewMembers.value = users;
 }
 
 init();

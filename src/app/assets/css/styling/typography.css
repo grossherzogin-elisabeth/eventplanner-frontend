@@ -39,6 +39,14 @@ code {
     @apply rounded-lg bg-gray-300 px-2 py-1;
 }
 
+::-moz-selection {
+    @apply bg-gray-600 text-white;
+}
+
+::selection {
+    @apply bg-gray-600 text-white;
+}
+
 @font-face {
     font-family: 'Open Sans';
     font-weight: normal;

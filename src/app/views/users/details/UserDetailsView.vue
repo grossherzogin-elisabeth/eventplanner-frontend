@@ -136,7 +136,7 @@
                         <th class="w-0"></th>
                     </template>
                     <template #row="{ item }">
-                        <td class="w-full border-none font-semibold">
+                        <td class="w-full border-none font-semibold" :class="{ 'opacity-50': item.isPastEvent }">
                             <RouterLink
                                 :to="{
                                     name: Routes.EventDetails,
@@ -148,8 +148,12 @@
                             </RouterLink>
                             <p class="text-sm font-light">{{ item.locations }}</p>
                         </td>
-                        <td class="hidden md:table-cell">{{ item.start }}</td>
-                        <td class="hidden md:table-cell">{{ item.duration }} Tage</td>
+                        <td class="hidden md:table-cell" :class="{ 'opacity-50': item.isPastEvent }">
+                            {{ item.start }}
+                        </td>
+                        <td class="hidden md:table-cell" :class="{ 'opacity-50': item.isPastEvent }">
+                            {{ item.duration }} Tage
+                        </td>
                         <td class="hidden md:table-cell">
                             <div
                                 class="position inline-flex items-center space-x-2"
@@ -219,6 +223,7 @@ interface EventTableViewItem {
     position: Position;
     positionName?: string;
     waitingList: boolean;
+    isPastEvent: boolean;
 }
 
 const ctx = useContext<Context>(Context);
@@ -270,6 +275,7 @@ async function fetchUserEvents(): Promise<void> {
                     positionName: slot?.positionName || position.name,
                     waitingList: slot === undefined,
                     locations: evt.locations.map((it) => it.name).join(' - '),
+                    isPastEvent: evt.start.getTime() < new Date().getTime(),
                 };
             }
             console.warn('Failed to get users position');
