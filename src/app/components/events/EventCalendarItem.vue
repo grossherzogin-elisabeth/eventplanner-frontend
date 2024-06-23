@@ -192,7 +192,6 @@ init();
 .calendar-event-entry {
     @apply bg-blue-400 bg-opacity-75;
     @apply bg-primary-700 bg-opacity-75;
-    @apply transition-all hover:pl-3;
 }
 .calendar-event-entry.full {
     background-image: var(--pattern);

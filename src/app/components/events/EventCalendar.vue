@@ -82,20 +82,6 @@
                     <!--                        <i class="fa-solid fa-file-csv" />-->
                 </button>
             </div>
-            <div class="">
-                <!--                <div class="flex items-center space-x-4">-->
-                <!--                    <div class="w-8 h-8 bg-green-800 rounded-lg"></div>-->
-                <!--                    <span>Angemeldet</span>-->
-                <!--                </div>-->
-                <!--                <div class="flex items-center space-x-4">-->
-                <!--                    <div class="w-8 h-8 bg-gray-500 rounded-lg"></div>-->
-                <!--                    <span>Reise</span>-->
-                <!--                </div>-->
-                <!--                <div class="flex items-center space-x-4">-->
-                <!--                    <div class="w-8 h-8 bg-orange-400 rounded-lg"></div>-->
-                <!--                    <span>Warteliste</span>-->
-                <!--                </div>-->
-            </div>
         </div>
     </div>
 </template>
