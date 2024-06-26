@@ -1,6 +1,7 @@
 import type { EventRepository } from '@/app/adapter';
 import type { Event, EventKey, ImportError, PositionKey, UserKey } from '@/app/types';
 import { EventState } from '@/app/types';
+import { getCsrfToken } from '@/app/adapter/rest/Csrf';
 
 interface SlotRepresentation {
     key: string;
@@ -77,6 +78,9 @@ export class EventRestRepository implements EventRepository {
             method: 'POST',
             credentials: 'include',
             body: formParams,
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
         });
         if (!response.ok) {
             throw response;
