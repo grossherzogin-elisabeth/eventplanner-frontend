@@ -92,8 +92,8 @@ export class EventRestRepository implements EventRepository {
             const eventErrs = map.get(err.eventKey) || {
                 eventName: err.eventName,
                 messages: [],
-                start: new Date(err.start),
-                end: new Date(err.end),
+                start: EventRestRepository.parseDate(err.start),
+                end: EventRestRepository.parseDate(err.end),
             };
             map.set(err.eventKey, eventErrs);
             eventErrs.messages.push(err.message);

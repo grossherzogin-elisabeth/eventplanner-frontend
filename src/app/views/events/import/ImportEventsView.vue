@@ -6,19 +6,15 @@
             </div>
             <div class="flex-grow"></div>
             <div class="flex items-stretch justify-end space-x-2">
-                <button v-if="uploading" class="btn-primary flex-grow whitespace-nowrap" disabled>
-                    <VLoadingSpinner v-if="uploading" />
-                    <span>Reisen werden importiert</span>
-                </button>
-                <button
-                    v-else
-                    class="btn-primary flex-grow whitespace-nowrap"
-                    :disabled="!file || uploading"
-                    @click="upload()"
-                >
-                    <i class="fa-solid fa-upload"></i>
-                    <span>Reisen importieren</span>
-                </button>
+                <AsyncButton :action="upload" :disabled="!file">
+                    <template #icon>
+                        <i class="fa-solid fa-upload"></i>
+                    </template>
+                    <template #label="{ loading }">
+                        <template v-if="loading">Reisen werden importiert</template>
+                        <template v-else>Reisen importieren</template>
+                    </template>
+                </AsyncButton>
             </div>
         </div>
         <div v-if="errors" class="overflow-auto px-8 py-8 lg:px-16 lg:pb-16">
@@ -61,9 +57,9 @@ import type { ImportError } from '@/app';
 import { Routes } from '@/app';
 import { Context } from '@/app/Context';
 import VTable from '@/lib/components/table/VTable.vue';
-import VLoadingSpinner from '@/lib/components/utils/VLoadingSpinner.vue';
 import { useContext } from '@/lib/composables';
 import { DateTimeFormat } from '@/shared/types';
+import AsyncButton from '@/app/components/atoms/AsyncButton.vue';
 
 interface InputFileEvent extends Event {
     target: HTMLInputElement;
@@ -75,7 +71,6 @@ const router = useRouter();
 
 const fileName = ref<string | null>(null);
 const file = ref<Blob | null>(null);
-const uploading = ref<boolean>(false);
 const errors = ref<ImportError[] | null>(null);
 
 function formatDate(date?: Date): string {
@@ -96,13 +91,6 @@ async function upload() {
     if (!file.value) {
         return;
     }
-    try {
-        uploading.value = true;
-        errors.value = await ctx.events.importEvents(2024, file.value);
-        uploading.value = false;
-        await router.push({ name: Routes.Events });
-    } catch (e) {
-        uploading.value = false;
-    }
+    errors.value = await ctx.events.importEvents(2024, file.value);
 }
 </script>

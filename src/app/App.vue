@@ -13,7 +13,7 @@
                 <RouterView class="flex flex-1 flex-col" />
                 <div
                     v-if="routeHasDialog"
-                    class="fixed bottom-0 left-0 right-0 top-0 z-20 bg-gray-700 bg-opacity-80 pt-12 lg:px-4 lg:pb-4 lg:pt-16 xl:p-8"
+                    class="fixed bottom-0 left-0 right-0 top-0 z-30 bg-gray-700 bg-opacity-80 pt-12 lg:px-4 lg:pb-4 lg:pt-16 xl:p-8"
                     @click="closeDialog()"
                 >
                     <div class="mx-auto flex h-full max-w-screen-lg items-start">
