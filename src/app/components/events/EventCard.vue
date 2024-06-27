@@ -3,7 +3,9 @@
         :to="{ name: Routes.EventDetails, params: { year: props.event.start.getFullYear(), key: props.event.key } }"
         class="block hover:no-underline"
     >
-        <div class="overflow-hidden rounded-2xl bg-primary-100 text-primary-950 hover:bg-primary-200 hover:shadow-xl transition-all">
+        <div
+            class="overflow-hidden rounded-2xl bg-primary-100 text-primary-950 transition-all hover:bg-primary-200 hover:shadow-xl"
+        >
             <div class="flex flex-col px-4 py-3">
                 <h3 class="mb-2 flex items-center space-x-2">
                     <span v-if="props.event.state === EventState.Canceled" class="text-red-500 line-through">

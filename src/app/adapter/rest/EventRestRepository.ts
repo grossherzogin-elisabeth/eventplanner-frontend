@@ -1,7 +1,7 @@
 import type { EventRepository } from '@/app/adapter';
+import { getCsrfToken } from '@/app/adapter/rest/Csrf';
 import type { Event, EventKey, ImportError, PositionKey, UserKey } from '@/app/types';
 import { EventState } from '@/app/types';
-import { getCsrfToken } from '@/app/adapter/rest/Csrf';
 
 interface SlotRepresentation {
     key: string;

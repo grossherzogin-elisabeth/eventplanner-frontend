@@ -13,7 +13,7 @@
         </span>
         <slot v-else name="icon"></slot>
         <span>
-            <slot name="label" :loading="loading" :success="success === true" :failed="success === false"/>
+            <slot name="label" :loading="loading" :success="success === true" :failed="success === false" />
         </span>
     </button>
 </template>
@@ -30,7 +30,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const loading = ref<boolean>(false);
-const success = ref<boolean|null>(null);
+const success = ref<boolean | null>(null);
 
 async function onClick(): Promise<void> {
     console.log('clicked');
@@ -47,4 +47,3 @@ async function onClick(): Promise<void> {
     }
 }
 </script>
-
