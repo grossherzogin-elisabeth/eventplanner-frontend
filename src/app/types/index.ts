@@ -12,3 +12,5 @@ export * from './events/ResolvedRegistration';
 export * from './auth/Role';
 export * from './auth/SignedInUser';
 export * from './user/User';
+export * from './user/Address';
+export * from './user/Certificate';

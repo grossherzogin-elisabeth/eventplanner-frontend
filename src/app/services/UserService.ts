@@ -1,5 +1,5 @@
 import type { PositionRepository, UserRepository } from '@/app/adapter';
-import type { Registration, ResolvedRegistration, ResolvedSlot } from '@/app/types';
+import type { Registration, ResolvedRegistration, ResolvedSlot, UserDetails } from '@/app/types';
 import type { Event, PositionKey } from '@/app/types';
 import type { Position, User, UserKey } from '@/app/types';
 import type { Cache } from '@/lib/utils';
@@ -36,11 +36,11 @@ export class UserService {
         return false;
     }
 
-    public async getUserByKey(key: UserKey): Promise<User> {
-        const cached = await this.userCache.findByKey(key);
-        if (cached) {
-            return cached;
-        }
+    public async getUserDetailsForSignedInUser(): Promise<UserDetails> {
+        return await this.userRepository.findBySignedInUser();
+    }
+
+    public async getUserDetailsByKey(key: UserKey): Promise<UserDetails> {
         return await this.userRepository.findByKey(key);
     }
 
@@ -145,7 +145,7 @@ export class UserService {
         if (!registration.userKey) {
             return undefined;
         }
-        return await this.getUserByKey(registration.userKey);
+        return await this.getUserDetailsByKey(registration.userKey);
     }
 
     public async importUsers(file: Blob): Promise<void> {

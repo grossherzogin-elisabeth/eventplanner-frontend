@@ -1,5 +1,5 @@
 import type { UserRepository } from '@/app/adapter';
-import type { PositionKey, User, UserKey } from '@/app/types';
+import type { PositionKey, User, UserDetails, UserKey } from '@/app/types';
 
 interface UserRepresentation {
     key: string;
@@ -11,10 +11,26 @@ interface UserRepresentation {
 interface UserDetailsRepresentation {
     key: string;
     authKey: string;
-    email: string;
     firstName: string;
+    secondName?: string;
     lastName: string;
     positions: string[];
+    email: string;
+    // qualifications: any[];
+    phone?: string;
+    mobile?: string;
+    dateOfBirth?: string;
+    placeOfBirth?: string;
+    passNr?: string;
+    comment?: string;
+    address: AddressRepresentation;
+}
+
+interface AddressRepresentation {
+    addressLine1: string;
+    addressLine2?: string;
+    town: string;
+    zipCode: string;
 }
 
 export class UserRestRepository implements UserRepository {
@@ -34,7 +50,7 @@ export class UserRestRepository implements UserRepository {
         }));
     }
 
-    public async findByKey(key: UserKey): Promise<User> {
+    public async findByKey(key: UserKey): Promise<UserDetails> {
         const response = await fetch(`/api/v1/users/by-key/${key}`, {
             credentials: 'include',
         });
@@ -44,9 +60,57 @@ export class UserRestRepository implements UserRepository {
         const representation: UserDetailsRepresentation = await response.clone().json();
         return {
             key: representation.key,
+            authKey: representation.authKey,
             firstName: representation.firstName,
+            secondName: representation.secondName,
             lastName: representation.lastName,
             positionKeys: representation.positions as PositionKey[],
+            // qualifications: representation.qualifications;
+            email: representation.email,
+            phone: representation.phone,
+            mobile: representation.mobile,
+            dateOfBirth: UserRestRepository.parseDate(representation.dateOfBirth),
+            placeOfBirth: representation.placeOfBirth,
+            passNr: representation.passNr,
+            comment: representation.comment,
+            address: {
+                addressLine1: representation.address.addressLine1,
+                addressLine2: representation.address.addressLine2,
+                town: representation.address.town,
+                zipcode: representation.address.zipCode,
+            },
+        };
+    }
+
+    public async findBySignedInUser(): Promise<UserDetails> {
+        const response = await fetch('/api/v1/users/self', {
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            throw response;
+        }
+        const representation: UserDetailsRepresentation = await response.clone().json();
+        return {
+            key: representation.key,
+            authKey: representation.authKey,
+            firstName: representation.firstName,
+            secondName: representation.secondName,
+            lastName: representation.lastName,
+            positionKeys: representation.positions as PositionKey[],
+            // qualifications: representation.qualifications;
+            email: representation.email,
+            phone: representation.phone,
+            mobile: representation.mobile,
+            dateOfBirth: UserRestRepository.parseDate(representation.dateOfBirth),
+            placeOfBirth: representation.placeOfBirth,
+            passNr: representation.passNr,
+            comment: undefined,
+            address: {
+                addressLine1: representation.address.addressLine1,
+                addressLine2: representation.address.addressLine2,
+                town: representation.address.town,
+                zipcode: representation.address.zipCode,
+            },
         };
     }
 
@@ -62,5 +126,15 @@ export class UserRestRepository implements UserRepository {
         if (!response.ok) {
             throw response;
         }
+    }
+
+    private static parseDate(value?: string): Date|undefined {
+        if (!value) {
+            return undefined;
+        }
+        if (value.includes('+')) {
+            return new Date(value.split('+')[0]);
+        }
+        return new Date(value);
     }
 }

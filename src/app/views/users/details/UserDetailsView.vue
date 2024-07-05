@@ -48,25 +48,37 @@
             <template #[Tab.USER_DATA]>
                 <div class="space-y-8 xl:space-y-16">
                     <section v-if="user" class="-mx-4">
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Auth Key</VInputLabel>
+                            <VInputText v-model="user.authKey"/>
+                        </div>
                         <div class="mb-2 md:w-1/4">
                             <VInputLabel>Geschlecht</VInputLabel>
                             <VInputSelect :options="genderOptions" required />
                         </div>
                         <div class="mb-2 md:w-1/2">
                             <VInputLabel>Vorname</VInputLabel>
-                            <VInputText v-model="user.firstName" required />
+                            <VInputText required v-model="user.firstName" />
+                        </div>
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Zweiter Vorname</VInputLabel>
+                            <VInputText v-model="user.secondName" required />
                         </div>
                         <div class="mb-2 md:w-1/2">
                             <VInputLabel>Nachname</VInputLabel>
-                            <VInputText v-model="user.lastName" required />
-                        </div>
-                        <div class="mb-2 md:w-1/2">
-                            <VInputLabel>Auth Key</VInputLabel>
-                            <VInputText />
+                            <VInputText required v-model="user.lastName" />
                         </div>
                         <div class="mb-2 md:w-1/2">
                             <VInputLabel>Geboren am</VInputLabel>
-                            <VInputDate required />
+                            <VInputDate required v-model="user.dateOfBirth"/>
+                        </div>
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Geburtsort</VInputLabel>
+                            <VInputText required v-model="user.placeOfBirth"/>
+                        </div>
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Pass Nummer</VInputLabel>
+                            <VInputText required v-model="user.passNr"/>
                         </div>
                     </section>
                 </div>
@@ -76,29 +88,33 @@
                     <section v-if="user" class="-mx-4">
                         <div class="mb-2 md:w-1/2">
                             <VInputLabel>Email</VInputLabel>
-                            <VInputText required model-value="max.mustermensch@email.de" />
+                            <VInputText required v-model="user.email" />
                         </div>
                         <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Telefon</VInputLabel>
+                            <VInputText v-model="user.phone" />
+                        </div>
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Mobil</VInputLabel>
+                            <VInputText v-model="user.mobile" />
+                        </div>
+                        <div class="mb-2 md:w-1/2 mt-16">
                             <VInputLabel>Straße, Hausnr</VInputLabel>
-                            <VInputText model-value="Musterstr. 1" />
+                            <VInputText required v-model="user.address.addressLine1" />
+                        </div>
+                        <div class="mb-2 md:w-1/2">
+                            <VInputLabel>Adresszusatz</VInputLabel>
+                            <VInputText v-model="user.address.addressLine2" />
                         </div>
                         <div class="flex space-x-4 md:w-1/2">
                             <div class="mb-2 w-24">
                                 <VInputLabel>PLZ</VInputLabel>
-                                <VInputText model-value="12345" />
+                                <VInputText required v-model="user.address.zipcode" />
                             </div>
                             <div class="mb-2 flex-grow">
                                 <VInputLabel>Ort</VInputLabel>
-                                <VInputText model-value="Musterort" />
+                                <VInputText required v-model="user.address.town" />
                             </div>
-                        </div>
-                        <div class="mb-2 md:w-1/2">
-                            <VInputLabel>Telefon</VInputLabel>
-                            <VInputText model-value="04921 123456789" />
-                        </div>
-                        <div class="mb-2 md:w-1/2">
-                            <VInputLabel>Mobil</VInputLabel>
-                            <VInputText model-value="0177 123456789" />
                         </div>
                     </section>
                 </div>
@@ -193,7 +209,7 @@
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Permission, Routes } from '@/app';
+import { Permission, Routes, UserDetails } from '@/app';
 import { Context } from '@/app/Context';
 import ContextMenuButton from '@/app/components/utils/ContextMenuButton.vue';
 import VTabs from '@/app/components/utils/VTabs.vue';
@@ -233,7 +249,7 @@ const i18n = useI18n();
 
 const tabs = [Tab.USER_DATA, Tab.USER_CONTACT_DATA, Tab.USER_CERTIFICATES, Tab.USER_EVENTS];
 const tab = ref<Tab>(Tab.USER_DATA);
-const user = ref<User | null>(null);
+const user = ref<UserDetails | null>(null);
 const events = ref<EventTableViewItem[]>([]);
 
 const genderOptions: InputSelectOption[] = [
@@ -249,7 +265,7 @@ function init(): void {
 
 async function fetchUser(): Promise<void> {
     const key = route.params.key as string;
-    user.value = await ctx.users.getUserByKey(key);
+    user.value = await ctx.users.getUserDetailsByKey(key);
 }
 
 async function fetchUserEvents(): Promise<void> {

@@ -2,52 +2,65 @@
     <div>
         <VTabs v-model="tab" class="sticky top-12 z-10 bg-primary-50 pt-4 xl:top-0" :tabs="tabs">
             <template #[Tab.ACCOUNT_DATA]>
-                <section class="-mx-4">
+                <section v-if="userDetails" class="-mx-4">
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Geschlecht</VInputLabel>
                         <VInputSelect v-model="user.gender" :options="genderOptions" required />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Vorname</VInputLabel>
-                        <VInputText v-model="user.firstname" required disabled />
+                        <VInputText v-model="userDetails.firstName" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Nachname</VInputLabel>
-                        <VInputText v-model="user.lastname" required disabled />
+                        <VInputText v-model="userDetails.lastName" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Geboren am</VInputLabel>
-                        <VInputDate required />
+                        <VInputDate required v-model="userDetails.dateOfBirth" />
+                    </div>
+                    <div class="mb-2 md:w-1/2">
+                        <VInputLabel>Geburtsort</VInputLabel>
+                        <VInputText v-model="userDetails.placeOfBirth" />
+                    </div>
+                    <div class="mb-2 md:w-1/2">
+                        <VInputLabel>Pass Nummer</VInputLabel>
+                        <VInputText v-model="userDetails.passNr" />
                     </div>
                 </section>
             </template>
             <template #[Tab.ACCOUNT_CONTACT_DATA]>
-                <section class="-mx-4">
+                <section v-if="userDetails" class="-mx-4">
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Email</VInputLabel>
-                        <VInputText v-model="user.email" required />
+                        <VInputText v-model="userDetails.email" required />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Straße, Hausnr</VInputLabel>
-                        <VInputText model-value="Musterstr. 1" />
+                        <VInputText v-model="userDetails.address.addressLine1" />
+                    </div>
+                    <div class="mb-2 md:w-1/2">
+                        <VInputLabel>Adresszusatz</VInputLabel>
+                        <VInputText v-model="userDetails.address.addressLine2" />
                     </div>
                     <div class="flex space-x-4 md:w-1/2">
                         <div class="mb-2 w-24">
                             <VInputLabel>PLZ</VInputLabel>
-                            <VInputText model-value="12345" />
+                            <VInputText v-model="userDetails.address.zipcode
+" />
                         </div>
                         <div class="mb-2 flex-grow">
                             <VInputLabel>Ort</VInputLabel>
-                            <VInputText model-value="Musterort" />
+                            <VInputText v-model="userDetails.address.town" />
                         </div>
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Telefon</VInputLabel>
-                        <VInputText model-value="04921 123456789" />
+                        <VInputText v-model="userDetails.phone" />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Mobil</VInputLabel>
-                        <VInputText model-value="0177 123456789" />
+                        <VInputText v-model="userDetails.mobile" />
                     </div>
                 </section>
             </template>
@@ -95,6 +108,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Context } from '@/app/Context';
+import { UserDetails } from '@/app/types';
 import VTabs from '@/app/components/utils/VTabs.vue';
 import { VInputDate, VInputSelect, VInputText } from '@/lib/components';
 import VInputLabel from '@/lib/components/input/VInputLabel.vue';
@@ -109,6 +123,7 @@ enum Tab {
 
 const ctx = useContext<Context>(Context);
 const user = ref(ctx.auth.getSignedInUser());
+const userDetails = ref<UserDetails|null>(null);
 
 const genderOptions: InputSelectOption[] = [
     { value: 'm', label: 'männlich' },
@@ -119,10 +134,14 @@ const genderOptions: InputSelectOption[] = [
 const tabs = [Tab.ACCOUNT_CREDENTIALS, Tab.ACCOUNT_DATA, Tab.ACCOUNT_CONTACT_DATA];
 const tab = ref<Tab>(Tab.ACCOUNT_CREDENTIALS);
 
-// const riggOptions: InputSelectOption[] = [
-//     { value: 'ja', label: 'Je höher desto besser' },
-//     { value: 'nur bis saling', label: 'Ja bis zur Saling' },
-//     { value: 'nur kluever', label: 'Nur Klüverbaum' },
-//     { value: 'nein', label: 'Nur an Deck' },
-// ];
+
+async function fetchUserDetails() {
+    userDetails.value = await ctx.users.getUserDetailsForSignedInUser();
+}
+
+function init() {
+    fetchUserDetails();
+}
+
+init();
 </script>
