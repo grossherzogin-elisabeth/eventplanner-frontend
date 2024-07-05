@@ -1,5 +1,5 @@
-import type { PositionKey } from './Position';
 import type { Address } from './Address';
+import type { PositionKey } from './Position';
 
 export type UserKey = string;
 export type AuthKey = string;

@@ -55,7 +55,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { Event} from '@/app';
+import type { Event } from '@/app';
 import { Permission } from '@/app';
 import { EventQuickFilter, Routes } from '@/app';
 import { Context } from '@/app/Context';

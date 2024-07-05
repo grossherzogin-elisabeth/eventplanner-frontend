@@ -128,7 +128,7 @@ export class UserRestRepository implements UserRepository {
         }
     }
 
-    private static parseDate(value?: string): Date|undefined {
+    private static parseDate(value?: string): Date | undefined {
         if (!value) {
             return undefined;
         }

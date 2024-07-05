@@ -17,7 +17,7 @@
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Geboren am</VInputLabel>
-                        <VInputDate required v-model="userDetails.dateOfBirth" />
+                        <VInputDate v-model="userDetails.dateOfBirth" required />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Geburtsort</VInputLabel>
@@ -46,8 +46,7 @@
                     <div class="flex space-x-4 md:w-1/2">
                         <div class="mb-2 w-24">
                             <VInputLabel>PLZ</VInputLabel>
-                            <VInputText v-model="userDetails.address.zipcode
-" />
+                            <VInputText v-model="userDetails.address.zipcode" />
                         </div>
                         <div class="mb-2 flex-grow">
                             <VInputLabel>Ort</VInputLabel>
@@ -108,8 +107,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Context } from '@/app/Context';
-import { UserDetails } from '@/app/types';
 import VTabs from '@/app/components/utils/VTabs.vue';
+import type { UserDetails } from '@/app/types';
 import { VInputDate, VInputSelect, VInputText } from '@/lib/components';
 import VInputLabel from '@/lib/components/input/VInputLabel.vue';
 import { useContext } from '@/lib/composables';
@@ -123,7 +122,7 @@ enum Tab {
 
 const ctx = useContext<Context>(Context);
 const user = ref(ctx.auth.getSignedInUser());
-const userDetails = ref<UserDetails|null>(null);
+const userDetails = ref<UserDetails | null>(null);
 
 const genderOptions: InputSelectOption[] = [
     { value: 'm', label: 'männlich' },
@@ -133,7 +132,6 @@ const genderOptions: InputSelectOption[] = [
 
 const tabs = [Tab.ACCOUNT_CREDENTIALS, Tab.ACCOUNT_DATA, Tab.ACCOUNT_CONTACT_DATA];
 const tab = ref<Tab>(Tab.ACCOUNT_CREDENTIALS);
-
 
 async function fetchUserDetails() {
     userDetails.value = await ctx.users.getUserDetailsForSignedInUser();
