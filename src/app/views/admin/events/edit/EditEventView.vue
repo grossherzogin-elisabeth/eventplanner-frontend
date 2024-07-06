@@ -2,7 +2,7 @@
     <div class="flex h-full flex-1 flex-col xl:overflow-y-scroll">
         <div class="absolute left-6 top-6 z-20 hidden xl:block">
             <RouterLink
-                :to="{ name: Routes.EventDetails }"
+                :to="{ name: Routes.EventsAdmin }"
                 class="flex items-center justify-center rounded-full p-3 hover:bg-primary-100"
             >
                 <i class="fa-solid fa-arrow-left"></i>
@@ -43,7 +43,7 @@
         </div>
 
         <!-- tabs -->
-        <VTabs v-model="tab" class="sticky top-0 z-10 bg-primary-50 pt-4" :tabs="tabs">
+        <VTabs v-model="tab" :tabs="tabs" class="sticky top-0 z-10 bg-primary-50 pt-4">
             <template #[Tab.EVENT_DATA]>
                 <div class="max-w-2xl space-y-8 xl:space-y-16">
                     <section v-if="event" class="-mx-4">
@@ -97,8 +97,8 @@
                     <div
                         v-for="(count, key) in summary"
                         :key="key"
-                        class="flex cursor-pointer items-center rounded-2xl p-1"
                         :style="{ 'background-color': position.get(key)?.color }"
+                        class="flex cursor-pointer items-center rounded-2xl p-1"
                     >
                         <span class="px-2">
                             {{ position.get(key)?.name }}
@@ -119,12 +119,12 @@
                                 <div
                                     v-for="slot in group"
                                     :key="slot.key + slot.userName"
-                                    class="rounded-lg border-l-8 px-2 py-1 pb-2 shadow"
                                     :class="getClassForSlot(slot)"
                                     :style="{ 'border-color': slot.position.color }"
-                                    @drop="handleDragStop($event, slot)"
-                                    @dragover="handleDragOver($event, slot)"
+                                    class="rounded-lg border-l-8 px-2 py-1 pb-2 shadow"
                                     @click="focusSlot(slot)"
+                                    @dragover="handleDragOver($event, slot)"
+                                    @drop="handleDragStop($event, slot)"
                                 >
                                     <div class="inline-block text-sm opacity-100">
                                         {{ slot.positionName }}
@@ -132,8 +132,8 @@
                                     <input
                                         v-if="slot.required"
                                         v-model="slot.userName"
-                                        placeholder="Noch nicht besetzt"
                                         class="w-full truncate border-b border-transparent bg-transparent placeholder-red-500 focus:bg-gray-100"
+                                        placeholder="Noch nicht besetzt"
                                     />
                                     <input
                                         v-else

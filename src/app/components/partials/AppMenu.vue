@@ -31,6 +31,12 @@
                     </li>
                 </ul>
             </li>
+            <li v-if="user.permissions.includes(Permission.WRITE_EVENTS)" class="menu-item">
+                <RouterLink :to="{ name: Routes.EventsAdmin }">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Reisen verwalten</span>
+                </RouterLink>
+            </li>
             <li v-if="user.permissions.includes(Permission.READ_USER_DETAILS)" class="menu-item">
                 <RouterLink :to="{ name: Routes.UsersList }">
                     <i class="fa-solid fa-users"></i>

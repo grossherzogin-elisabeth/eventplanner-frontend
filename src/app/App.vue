@@ -99,7 +99,7 @@ const cachedMainView = ref<any>(undefined);
 const initialized = ref<boolean>(false);
 const loggedIn = ref<boolean>(false);
 
-const routeHasDialog = computed<boolean>(() => route.matched[0]?.components?.dialog !== undefined);
+const routeHasDialog = computed<boolean>(() => route.matched[route.matched.length - 1]?.components?.dialog !== undefined);
 
 let mainRoute: string | null = null;
 let dialogStack: string[] = [];

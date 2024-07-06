@@ -4,17 +4,18 @@ import { Routes } from '@/app/views/Routes';
 import type { RouteMetaData } from '@/shared/types';
 
 const routeMeta: RouteMetaData = {
-    title: 'Reise bearbeiten',
+    title: 'Reisen importieren',
     authenticated: true,
     permissions: [Permission.WRITE_EVENTS],
-    backTo: Routes.EventDetails,
-    breadcrumps: (route) => ['Reisen', String(route?.params?.year), 'Reise bearbeiten'],
 };
 
 const route: RouteRecordRaw = {
-    path: 'edit/:key',
-    name: Routes.EventEdit,
-    component: () => import('./EditEventView.vue'),
+    path: 'import',
+    name: Routes.EventsImport,
+    components: {
+        default: () => import('../list/EventsAdminView.vue'),
+        dialog: () => import('./ImportEventsView.vue'),
+    },
     meta: routeMeta,
 };
 

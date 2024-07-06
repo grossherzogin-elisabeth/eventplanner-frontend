@@ -9,6 +9,7 @@ export enum Routes {
     Logout = 'app_logout',
 
     Events = 'app_events',
+    EventsAdmin = 'app_events-admin',
     EventDetails = 'app_event-details',
     EventEdit = 'app_event-edit',
     EventsImport = 'app_events-import',

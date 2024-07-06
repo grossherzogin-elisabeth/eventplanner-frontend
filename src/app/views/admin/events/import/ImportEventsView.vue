@@ -57,7 +57,7 @@ import type { ImportError } from '@/app';
 import { Routes } from '@/app';
 import { Context } from '@/app/Context';
 import AsyncButton from '@/app/components/atoms/AsyncButton.vue';
-import VTable from '@/lib/components/table/VTable.vue';
+import VTable from '../../../../../lib/components/table/VTable.vue';
 import { useContext } from '@/lib/composables';
 import { DateTimeFormat } from '@/shared/types';
 

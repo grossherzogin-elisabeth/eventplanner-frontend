@@ -1,20 +1,19 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { Permission } from '@/app/types';
-import List from '@/app/views/events/calendar/NestedRoute';
+import { Routes } from '@/app/views/Routes';
 import type { RouteMetaData } from '@/shared/types';
-import Details from './details/NestedRoute';
 
 const routeMeta: RouteMetaData = {
-    title: (route) => 'Reisen ' + route.params.year,
+    title: 'Reisen verwalten',
     authenticated: true,
-    permissions: [Permission.READ_EVENTS],
+    permissions: [Permission.WRITE_EVENTS],
 };
 
 const route: RouteRecordRaw = {
-    path: '/events/:year',
+    path: '',
+    name: Routes.EventsAdmin,
+    component: () => import('./EventsAdminView.vue'),
     meta: routeMeta,
-    name: 'app_event-parent',
-    children: [List, Details],
 };
 
 export default route;

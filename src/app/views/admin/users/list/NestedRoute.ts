@@ -4,18 +4,15 @@ import { Routes } from '@/app/views/Routes';
 import type { RouteMetaData } from '@/shared/types';
 
 const routeMeta: RouteMetaData = {
-    title: 'Nutzer importieren',
+    title: 'Crewverwaltung',
     authenticated: true,
-    permissions: [Permission.WRITE_USERS],
+    permissions: [Permission.READ_USERS],
 };
 
 const route: RouteRecordRaw = {
-    path: '/users/import',
-    name: Routes.UsersImport,
-    components: {
-        default: () => import('../list/UsersListView.vue'),
-        dialog: () => import('./ImportUsersView.vue'),
-    },
+    path: '',
+    name: Routes.UsersList,
+    component: () => import('./UsersListView.vue'),
     meta: routeMeta,
 };
 
