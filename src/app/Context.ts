@@ -66,12 +66,7 @@ export class Context {
         // -----------------------------------------------------
         // Dynamically load all routes of this context. Routes must be defined in a `Route.ts` file containing a single
         // route and exported as default.
-        console.log(Object.values(import.meta.glob('./views/**/Route.ts', { eager: true })));
         Object.values(import.meta.glob<{ default?: RouteRecordRaw }>('./views/**/Route.ts', { eager: true }))
-            .map((it) => {
-                console.log(it.default);
-                return it;
-            })
             .filter((module) => module.default !== undefined)
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .map((module) => module.default!)
@@ -128,6 +123,16 @@ export class Context {
     }
 
     /**
+     * Initialize the context and provide it on the vue instance
+     * @param params context parameters
+     */
+    public static initialize(params: ContextParams): Context {
+        const ctx = new Context(params);
+        params.vue.provide(Context.contextName, ctx);
+        return ctx;
+    }
+
+    /**
      * Add an authentication guard to the router. This guard requires the auth service of app context and therefore
      * must be initialized here instead of within the router plugin
      * @param router router instance
@@ -169,15 +174,5 @@ export class Context {
                 document.title = 'Lissi App';
             }
         });
-    }
-
-    /**
-     * Initialize the context and provide it on the vue instance
-     * @param params context parameters
-     */
-    public static initialize(params: ContextParams): Context {
-        const ctx = new Context(params);
-        params.vue.provide(Context.contextName, ctx);
-        return ctx;
     }
 }

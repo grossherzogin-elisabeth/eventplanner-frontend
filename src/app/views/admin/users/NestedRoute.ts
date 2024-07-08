@@ -1,11 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { Routes } from '@/app';
 import { Permission } from '@/app/types';
 import type { RouteMetaData } from '@/shared/types';
 import Details from './details/NestedRoute';
 import Import from './import/NestedRoute';
 import List from './list/NestedRoute';
-import { Routes } from '@/app';
-
 
 const routeMeta: RouteMetaData = {
     title: 'Crewverwaltung',

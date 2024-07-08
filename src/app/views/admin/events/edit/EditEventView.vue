@@ -16,7 +16,8 @@
                 </div>
                 <div class="flex-grow"></div>
                 <div v-if="event" class="hidden items-stretch justify-end space-x-2 xl:flex">
-                    <button class="btn-primary" @click="resetTeam()">
+                    <button class="btn-secondary" @click="resetTeam()">
+                        <i class="fa-solid fa-rotate"></i>
                         <span>Zurücksetzen</span>
                     </button>
                     <button
@@ -80,6 +81,11 @@
                                 <VInputText model-value="16:00" required />
                             </div>
                         </div>
+
+                        <div class="flex-grow">
+                            <VInputLabel>Seemeilen</VInputLabel>
+                            <VInputText model-value="300" required />
+                        </div>
                     </section>
                 </div>
             </template>
@@ -110,55 +116,89 @@
                         </span>
                     </div>
                 </div>
-                <div class="flex items-start space-x-8">
-                    <!-- event team -->
-                    <div class="w-3/4">
-                        <div v-for="(group, groupIndex) in groupedSlots" :key="groupIndex" class="mb-2">
-                            <h3 class="mb-2 text-sm">{{ position.get(groupIndex)?.name }}</h3>
-                            <div class="grid grid-cols-4 gap-2">
-                                <div
-                                    v-for="slot in group"
-                                    :key="slot.key + slot.userName"
-                                    :class="getClassForSlot(slot)"
-                                    :style="{ 'border-color': slot.position.color }"
-                                    class="rounded-lg border-l-8 px-2 py-1 pb-2 shadow"
-                                    @click="focusSlot(slot)"
-                                    @dragover="handleDragOver($event, slot)"
-                                    @drop="handleDragStop($event, slot)"
+                <div class="grid grid-cols-2 gap-16">
+                    <div>
+                        <h2 class="mb-8">Crew</h2>
+                        <div v-if="dragSource === DragSource.FROM_WAITING_LIST" class="">
+                            <div
+                                class="flex h-96 items-center justify-center rounded-2xl bg-blue-100"
+                                @dragover="handleDragOver($event)"
+                                @drop="handleDragStopAddToTeam($event)"
+                            >
+                                <span class="text-primary-600">Zur Crew hinzufügen</span>
+                            </div>
+                        </div>
+                        <ul v-else class="-mx-4">
+                            <template v-for="(it, index) in team" :key="index">
+                                <li
+                                    :class="{ 'cursor-move': it.userName !== undefined }"
+                                    :draggable="it.userName !== undefined"
+                                    class="flex items-center space-x-2 rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
+                                    @dragend="dragSource = DragSource.NONE"
+                                    @dragstart="handleDragStartFromTeam($event, it)"
                                 >
-                                    <div class="inline-block text-sm opacity-100">
-                                        {{ slot.positionName }}
-                                    </div>
-                                    <input
-                                        v-if="slot.required"
-                                        v-model="slot.userName"
-                                        class="w-full truncate border-b border-transparent bg-transparent placeholder-red-500 focus:bg-gray-100"
-                                        placeholder="Noch nicht besetzt"
-                                    />
-                                    <input
-                                        v-else
-                                        v-model="slot.userName"
-                                        class="w-full truncate border-b border-transparent bg-transparent focus:bg-gray-100"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                                    <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
+                                    <span v-if="it.userName && !it.confirmed">
+                                        <i class="fa-solid fa-user-clock text-gray-400"></i>
+                                    </span>
+                                    <span v-else-if="it.userName && it.confirmed">
+                                        <i class="fa-solid fa-user-check text-green-600"></i>
+                                    </span>
+                                    <span v-else>
+                                        <i class="fa-solid fa-user-xmark text-red-500"></i>
+                                    </span>
+                                    <span v-if="it.userName" class="truncate">{{ it.userName }}</span>
+                                    <span v-else-if="it.userKey" class="italic text-red-500"
+                                        >err: {{ it.userKey }}</span
+                                    >
+                                    <span v-else class="truncate italic text-red-500">Noch nicht besetzt</span>
+                                    <span v-if="it.userName && !it.userKey" class="">(Gastcrew)</span>
+                                    <span class="flex-grow"></span>
+                                    <span :style="{ background: it.position.color }" class="position ml-auto">
+                                        {{ it.positionName }}
+                                    </span>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
-                    <!-- registrations -->
-                    <div class="w-1/4 space-y-2 rounded-2xl bg-primary-100 p-4 shadow">
-                        <h3 class="mb-4">Anmeldungen</h3>
-                        <div
-                            v-for="registration in filteredRegistrations"
-                            :key="registration.userKey"
-                            class="cursor-move bg-transparent"
-                            draggable="true"
-                            @dragstart="handleDragStart($event, registration)"
-                        >
-                            <div class="rounded-2xl">
-                                <p class="font-semibold">{{ registration.name }}</p>
-                                <p class="text-xs">{{ registration.position.name }}</p>
+                    <div>
+                        <h2 class="mb-8">Weitere Anmeldungen</h2>
+                        <div v-if="dragSource === DragSource.FROM_TEAM" class="space-y-8">
+                            <div
+                                class="flex h-44 items-center justify-center rounded-2xl bg-blue-100"
+                                @dragover="handleDragOver($event)"
+                                @drop="handleDragStopRemoveFromTeam($event)"
+                            >
+                                <span class="text-primary-600">Auf Warteliste verschieben</span>
+                            </div>
+                            <div
+                                class="flex h-44 items-center justify-center rounded-2xl bg-red-100"
+                                @dragover="handleDragOver($event)"
+                                @drop="handleDragStopCancelRegistration($event)"
+                            >
+                                <span class="text-red-600">Anmeldung löschen</span>
                             </div>
                         </div>
+                        <ul v-else class="-mx-4">
+                            <template v-for="(it, index) in registrations" :key="index">
+                                <li
+                                    class="flex cursor-move items-center space-x-2 rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
+                                    draggable="true"
+                                    @dragend="dragSource = DragSource.NONE"
+                                    @dragstart="handleDragStartFromWaitinglist($event, it)"
+                                >
+                                    <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
+                                    <span v-if="it.name" class="truncate">{{ it.name }}</span>
+                                    <span v-else-if="it.userKey" class="italic text-red-500"
+                                        >err: {{ it.userKey }}</span
+                                    >
+                                    <span class="flex-grow"></span>
+                                    <span :style="{ background: it.position.color }" class="position ml-auto">
+                                        {{ it.position.name }}
+                                    </span>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
             </template>
@@ -186,45 +226,24 @@ enum Tab {
     EVENT_KAMMERPLAN = 'Kammerplan',
 }
 
+enum DragSource {
+    NONE = 'none',
+    FROM_TEAM = 'team',
+    FROM_WAITING_LIST = 'waitinglist',
+}
+
 const ctx = useContext<Context>(Context);
 const signedInUser = ctx.auth.getSignedInUser();
 const i18n = useI18n();
 const route = useRoute();
 
-const tabs = [Tab.EVENT_DATA, Tab.EVENT_POSITIONS, Tab.EVENT_KAMMERPLAN];
-const tab = ref<Tab>(Tab.EVENT_DATA);
+const tabs = [Tab.EVENT_POSITIONS, Tab.EVENT_DATA, Tab.EVENT_KAMMERPLAN];
+const tab = ref<Tab>(Tab.EVENT_POSITIONS);
 const event = ref<Event | null>(null);
 const position = ref<Map<PositionKey, Position>>(new Map<PositionKey, Position>());
-const focusedSlot = ref<ResolvedSlot | null>(null);
 const registrations = ref<ResolvedRegistration[]>([]);
 const team = ref<ResolvedSlot[]>([]);
-
-const filteredSlots = computed<ResolvedSlot[]>(() => {
-    return team.value;
-    // .filter((it) => it.position.key === 'leichtmatrose');
-});
-
-const groupedSlots = computed<Record<string, ResolvedSlot[]>>(() => {
-    // no grouping
-    return { all: filteredSlots.value };
-
-    // group by required
-    // const required = filteredSlots.value.filter((it) => it.required || it.userName || it.userKey);
-    // const optional = filteredSlots.value.filter((it) => !it.required && !it.userName && !it.userKey);
-    // return {
-    //     required,
-    //     optional,
-    // };
-
-    // group by role
-    // const grouped: Record<string, ResolvedSlot[]> = {};
-    // filteredSlots.value.forEach((it) => {
-    //     const group = grouped[it.position.key] || [];
-    //     group.push(it);
-    //     grouped[it.position.key] = group;
-    // });
-    // return grouped;
-});
+const dragSource = ref<DragSource>(DragSource.NONE);
 
 const summary = computed<Record<PositionKey, number>>(() => {
     const sum: Record<PositionKey, number> = {};
@@ -238,13 +257,6 @@ const summary = computed<Record<PositionKey, number>>(() => {
     return sum;
 });
 
-const filteredRegistrations = computed<ResolvedRegistration[]>(() => {
-    if (!focusedSlot.value) {
-        return registrations.value;
-    }
-    return registrations.value.filter((it) => focusedSlot.value?.positionKeys.includes(it.positionKey));
-});
-
 function init(): void {
     fetchPositions();
     fetchEvent();
@@ -254,56 +266,80 @@ function formatDate(date?: Date): string {
     return date ? i18n.d(date, DateTimeFormat.Date) : '';
 }
 
-function getClassForSlot(slot: ResolvedSlot): string {
-    if (focusedSlot.value?.key === slot.key) {
-        return 'shadow-lg bg-primary-100';
+function handleDragStartFromTeam(dragEvent: DragEvent, slot: ResolvedSlot) {
+    if (dragEvent.dataTransfer && slot.userName) {
+        dragSource.value = DragSource.FROM_TEAM;
+        dragEvent.dataTransfer.setData('application/json', JSON.stringify(slot));
+        dragEvent.dataTransfer.dropEffect = 'link';
+    } else {
+        dragEvent.preventDefault();
     }
-    if (slot.required && !slot.userName) {
-        return 'bg-red-100 text-red-500';
-    }
-    return 'bg-white';
 }
 
-function handleDragStart(dragEvent: DragEvent, registration: ResolvedRegistration) {
+function handleDragStartFromWaitinglist(dragEvent: DragEvent, registration: ResolvedRegistration) {
     if (dragEvent.dataTransfer) {
+        dragSource.value = DragSource.FROM_WAITING_LIST;
         dragEvent.dataTransfer.setData('application/json', JSON.stringify(registration));
         dragEvent.dataTransfer.dropEffect = 'link';
-        // const target = dragEvent.target as HTMLElement
-        // target.style.display = 'none';
+    } else {
+        dragEvent.preventDefault();
     }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function handleDragOver(dragEvent: DragEvent, targetSlot: ResolvedSlot) {
+function handleDragOver(dragEvent: DragEvent) {
     if (dragEvent.dataTransfer) {
         dragEvent.preventDefault();
         dragEvent.dataTransfer.dropEffect = 'link';
     }
 }
 
-async function handleDragStop(dragEvent: DragEvent, targetSlot: ResolvedSlot) {
+async function handleDragStopAddToTeam(dragEvent: DragEvent) {
+    dragSource.value = DragSource.NONE;
     if (event.value && dragEvent.dataTransfer) {
         dragEvent.preventDefault();
         const registration: ResolvedRegistration = JSON.parse(dragEvent.dataTransfer.getData('application/json'));
         const user = await ctx.users.resolveRegistrationUser(registration);
-        if (user && !ctx.events.canUserBeAssignedToSlot(event.value, user, targetSlot.key)) {
-            // do nothing?
+
+        const slot = ctx.events
+            .getOpenSlots(event.value)
+            .find((it) => it.positionKeys.includes(registration.positionKey));
+        if (!slot) {
             alert('Das geht nicht');
         } else if (user) {
-            event.value = ctx.events.assignUserToSlot(event.value, user, targetSlot.key);
-            fetchTeam();
+            event.value = ctx.events.assignUserToSlot(event.value, user, slot.key);
+            await fetchTeam();
         } else {
-            event.value = ctx.events.assignGuestToSlot(event.value, registration.name, targetSlot.key);
-            fetchTeam();
+            event.value = ctx.events.assignGuestToSlot(event.value, registration.name, slot.key);
+            await fetchTeam();
         }
     }
 }
 
-function focusSlot(slot: ResolvedSlot) {
-    if (focusedSlot.value?.key === slot.key) {
-        focusedSlot.value = null;
-    } else {
-        focusedSlot.value = slot;
+async function handleDragStopRemoveFromTeam(dragEvent: DragEvent) {
+    dragSource.value = DragSource.NONE;
+    if (event.value && dragEvent.dataTransfer) {
+        dragEvent.preventDefault();
+        const slot: ResolvedSlot = JSON.parse(dragEvent.dataTransfer.getData('application/json'));
+        if (slot) {
+            event.value = ctx.events.unassignSlot(event.value, slot.key);
+            await fetchTeam();
+        }
+    }
+}
+
+async function handleDragStopCancelRegistration(dragEvent: DragEvent) {
+    dragSource.value = DragSource.NONE;
+    if (event.value && dragEvent.dataTransfer) {
+        dragEvent.preventDefault();
+        const slot: ResolvedSlot = JSON.parse(dragEvent.dataTransfer.getData('application/json'));
+        if (slot.userKey) {
+            event.value = ctx.events.cancelUserRegistration(event.value, slot.userKey);
+            await fetchTeam();
+        } else if (slot.userName) {
+            event.value = ctx.events.cancelGuestRegistration(event.value, slot.userName);
+            await fetchTeam();
+        }
     }
 }
 
@@ -315,13 +351,14 @@ async function fetchEvent(): Promise<void> {
     const year = parseInt(route.params.year as string, 10);
     const key = route.params.key as string;
     event.value = await ctx.events.getEventByKey(year, key);
-    fetchTeam();
+    await fetchTeam();
 }
 
 async function fetchTeam(): Promise<void> {
     if (event.value) {
-        console.log('fetch team');
-        team.value = await ctx.users.resolveEventSlots(event.value);
+        team.value = (await ctx.users.resolveEventSlots(event.value)).filter(
+            (it) => it.userName || it.userKey || it.required
+        );
         registrations.value = await ctx.users.resolveWaitingList(event.value);
     }
 }

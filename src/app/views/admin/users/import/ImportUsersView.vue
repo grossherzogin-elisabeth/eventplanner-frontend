@@ -41,8 +41,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Routes } from '@/app';
 import { Context } from '@/app/Context';
-import VLoadingSpinner from '../../../../../lib/components/utils/VLoadingSpinner.vue';
 import { useContext } from '@/lib/composables';
+import VLoadingSpinner from '../../../../../lib/components/utils/VLoadingSpinner.vue';
 
 interface InputFileEvent extends Event {
     target: HTMLInputElement;

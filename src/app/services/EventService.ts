@@ -1,7 +1,17 @@
 import type { AuthRepository, EventRepository } from '@/app/adapter';
-import type { Event, EventKey, ImportError, PositionKey, SlotKey, User, UserKey } from '@/app/types';
-import { DateUtils, Formatter } from '@/lib/utils';
+import type {
+    Event,
+    EventKey,
+    ImportError,
+    PositionKey,
+    Registration,
+    Slot,
+    SlotKey,
+    User,
+    UserKey,
+} from '@/app/types';
 import type { Cache } from '@/lib/utils';
+import { ArrayUtils, DateUtils, Formatter } from '@/lib/utils';
 
 export class EventService {
     private readonly eventRepository: EventRepository;
@@ -156,6 +166,7 @@ Viele Grüße,`;
         this.clearSlot(event, slotKey);
         registration.slotKey = slotKey;
         event.assignedUserCount++;
+        this.debugSlots(event);
         return event;
     }
 
@@ -174,12 +185,33 @@ Viele Grüße,`;
         return event;
     }
 
-    public clearSlot(event: Event, slotKey: SlotKey) {
+    public unassignSlot(event: Event, slotKey: SlotKey): Event {
+        const slot = event.slots.find((it) => it.key === slotKey);
+        if (!slot) {
+            throw new Error('Failed to resolve slot');
+        }
+        event = this.clearSlot(event, slotKey);
+        event = this.optimizeSlots(event);
+        return event;
+    }
+
+    public cancelUserRegistration(event: Event, userKey?: UserKey): Event {
+        event.registrations = event.registrations.filter((it) => it.userKey !== userKey);
+        return event;
+    }
+
+    public cancelGuestRegistration(event: Event, name?: string): Event {
+        event.registrations = event.registrations.filter((it) => it.name !== name);
+        return event;
+    }
+
+    public clearSlot(event: Event, slotKey: SlotKey): Event {
         const currentRegistrationInSlot = event.registrations.find((it) => it.slotKey === slotKey);
         if (currentRegistrationInSlot) {
             currentRegistrationInSlot.slotKey = undefined;
             event.assignedUserCount--;
         }
+        return event;
     }
 
     public canUserBeAssignedToSlot(event: Event, user: User, slotKey: SlotKey): boolean {
@@ -192,6 +224,11 @@ Viele Grüße,`;
             return false;
         }
         return slot.positionKeys.find((positionkey) => user.positionKeys.includes(positionkey)) !== undefined;
+    }
+
+    public getOpenSlots(event: Event): Slot[] {
+        const usedSlotKeys = event.registrations.map((it) => it.slotKey).filter(ArrayUtils.filterUndefined);
+        return event.slots.filter((it) => !usedSlotKeys.includes(it.key));
     }
 
     public downloadCalendarEntry(event: Event): void {
@@ -232,6 +269,45 @@ Viele Grüße,`;
         } catch (e) {
             // ignore
         }
+    }
+
+    /**
+     * Reorders slots to make sure the higher ranked slots are filled first, making space for lower qualified
+     * team members
+     * @param event
+     */
+    private optimizeSlots(event: Event): Event {
+        const slotMap = new Map<SlotKey | undefined, Registration | undefined>();
+        event.registrations.forEach((it) => slotMap.set(it.slotKey, it));
+
+        for (let i = 0; i < event.slots.length; i++) {
+            const slot = event.slots[i];
+            if (!slotMap.has(slot.key)) {
+                for (let j = i + 1; j < event.slots.length; j++) {
+                    const nextSlot = event.slots[j];
+                    const registration = slotMap.get(nextSlot?.key);
+                    if (registration && slot.positionKeys.includes(registration.positionKey)) {
+                        // move registration to higher prio slot
+                        registration.slotKey = slot.key;
+                        slotMap.set(slot.key, registration);
+                        slotMap.delete(nextSlot.key);
+                        break;
+                    }
+                }
+            }
+        }
+        return event;
+    }
+
+    private debugSlots(event: Event) {
+        console.log(
+            event.slots
+                .map((s) => event.registrations.find((r) => r.slotKey === s.key))
+                .map((it) => ({
+                    user: it?.userKey || it?.name,
+                    position: it?.positionKey,
+                }))
+        );
     }
 
     private formatIcsDate(date: Date): string {

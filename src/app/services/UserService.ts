@@ -1,7 +1,15 @@
 import type { PositionRepository, UserRepository } from '@/app/adapter';
-import type { Registration, ResolvedRegistration, ResolvedSlot, UserDetails } from '@/app/types';
-import type { Event, PositionKey } from '@/app/types';
-import type { Position, User, UserKey } from '@/app/types';
+import type {
+    Event,
+    Position,
+    PositionKey,
+    Registration,
+    ResolvedRegistration,
+    ResolvedSlot,
+    User,
+    UserDetails,
+    UserKey,
+} from '@/app/types';
 import type { Cache } from '@/lib/utils';
 import { ArrayUtils } from '@/lib/utils';
 
@@ -103,6 +111,7 @@ export class UserService {
                         registration: registration,
                         position: position,
                         positionName: slot.positionName || position.name,
+                        confirmed: false,
                     };
                 }
                 const position = positions.get(slot.positionKeys[0]) || this.unknownPosition();
@@ -113,6 +122,7 @@ export class UserService {
                     registration: registration,
                     position: position,
                     positionName: slot.positionName || position.name,
+                    confirmed: false,
                 };
             })
             .sort(
