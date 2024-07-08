@@ -93,7 +93,8 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Event, Permission, Routes } from '@/app';
+import type { Event} from '@/app';
+import { Permission, Routes } from '@/app';
 import { Context } from '@/app/Context';
 import NavbarFilter from '@/app/components/utils/NavbarFilter.vue';
 import { VInputText, VTable } from '@/lib/components';
