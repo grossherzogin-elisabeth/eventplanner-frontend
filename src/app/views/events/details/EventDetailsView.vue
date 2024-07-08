@@ -59,7 +59,7 @@
                                 <span>Kalendereintrag erstellen</span>
                             </li>
                             <li v-if="user.permissions.includes(Permission.WRITE_EVENTS)">
-                                <RouterLink class="context-menu-item" :to="{ name: Routes.EventEdit }">
+                                <RouterLink :to="{ name: Routes.EventEdit }" class="context-menu-item">
                                     <i class="fa-solid fa-edit w-6"></i>
                                     <span>Reise bearbeiten</span>
                                 </RouterLink>
@@ -86,7 +86,7 @@
                 <div class="top-18 fixed left-4 right-4 overflow-hidden rounded-2xl bg-white md:static">
                     <div :class="state.color">
                         <div class="flex items-center space-x-4 px-4 py-4 lg:px-8">
-                            <i class="fa-solid" :class="state.icon" />
+                            <i :class="state.icon" class="fa-solid" />
                             <!-- eslint-disable-next-line vue/no-v-html -->
                             <p class="text-sm font-bold" v-html="state.text"></p>
                         </div>
@@ -145,7 +145,7 @@
                         :key="portIndex"
                         class="flex items-center space-x-4"
                     >
-                        <i class="fa-solid w-4" :class="stop.icon" />
+                        <i :class="stop.icon" class="fa-solid w-4" />
                         <span class="flex-grow">{{ stop.name }}</span>
                         <CountryFlag v-if="stop.country" :country="stop.country" class="border border-gray-200" />
                     </div>
@@ -179,7 +179,7 @@
                                     <span v-else class="truncate italic text-red-500">Noch nicht besetzt</span>
                                     <span v-if="it.userName && !it.userKey" class="">(Gastcrew)</span>
                                     <span class="flex-grow"></span>
-                                    <span class="position ml-auto" :style="{ background: it.position.color }">
+                                    <span :style="{ background: it.position.color }" class="position ml-auto">
                                         {{ it.positionName }}
                                     </span>
                                 </li>
@@ -195,7 +195,7 @@
                             >
                                 <i class="fa-solid fa-user-circle text-gray-500"></i>
                                 <span class="flex-grow">{{ it.name }}</span>
-                                <span class="position" :style="{ background: it.position.color }">
+                                <span :style="{ background: it.position.color }" class="position">
                                     {{ it.position.name }}
                                 </span>
                             </li>
@@ -304,7 +304,7 @@ const state = computed<State | null>(() => {
                 ? i18n.t('app.event-details.note-waitinglist-position', { position: ownPosition.value.name })
                 : i18n.t('app.event-details.note-waitinglist'),
             icon: 'fa-clock',
-            color: 'bg-blue-300 text-blue-800',
+            color: 'bg-yellow-100 text-yellow-900',
         };
     }
     return null;
