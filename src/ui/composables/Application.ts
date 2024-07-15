@@ -1,9 +1,17 @@
 import { inject } from 'vue';
-import type { AuthUseCase, EventUseCase, UsersUseCase } from '@/application';
+import type {
+    AuthUseCase,
+    EventAdministrationUseCase,
+    EventUseCase,
+    UserAdministrationUseCase,
+    UsersUseCase,
+} from '@/application';
 
 export const AUTH_USE_CASE = 'application.usecase.auth';
 export const EVENT_USE_CASE = 'application.usecase.events';
 export const USER_USE_CASE = 'application.usecase.users';
+export const USER_ADMIN_USE_CASE = 'application.usecase.useradmin';
+export const EVENT_ADMIN_USE_CASE = 'application.usecase.eventadmin';
 
 export function useAuthUseCase(): AuthUseCase {
     const useCase = inject<AuthUseCase>(AUTH_USE_CASE);
@@ -21,10 +29,26 @@ export function useEventUseCase(): EventUseCase {
     return useCase;
 }
 
+export function useEventAdministrationUseCase(): EventAdministrationUseCase {
+    const useCase = inject<EventAdministrationUseCase>(EVENT_ADMIN_USE_CASE);
+    if (!useCase) {
+        throw new Error('Event admin usecase not found!');
+    }
+    return useCase;
+}
+
 export function useUsersUseCase(): UsersUseCase {
     const useCase = inject<UsersUseCase>(USER_USE_CASE);
     if (!useCase) {
         throw new Error('User usecase not found!');
+    }
+    return useCase;
+}
+
+export function useUserAdministrationUseCase(): UserAdministrationUseCase {
+    const useCase = inject<UserAdministrationUseCase>(USER_ADMIN_USE_CASE);
+    if (!useCase) {
+        throw new Error('User admin usecase not found!');
     }
     return useCase;
 }

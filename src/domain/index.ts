@@ -18,4 +18,5 @@ export * from './values/Address';
 export * from './values/ValidationHint';
 export * from './values/InputSelectOption';
 export * from './services/EventService';
+export * from './services/RegistrationService';
 export * from './services/UserService';

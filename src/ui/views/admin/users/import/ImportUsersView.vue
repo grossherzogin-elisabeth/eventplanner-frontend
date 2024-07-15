@@ -40,7 +40,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { VLoadingSpinner } from '@/ui/components/common';
-import { useUsersUseCase } from '@/ui/composables/Application';
+import { useUserAdministrationUseCase } from '@/ui/composables/Application';
 import { Routes } from '@/ui/views/Routes';
 
 interface InputFileEvent extends Event {
@@ -48,7 +48,7 @@ interface InputFileEvent extends Event {
 }
 
 const router = useRouter();
-const usersUseCase = useUsersUseCase();
+const userAdministrationUseCase = useUserAdministrationUseCase();
 
 const fileName = ref<string | null>(null);
 const file = ref<Blob | null>(null);
@@ -70,7 +70,7 @@ async function upload() {
     }
     try {
         uploading.value = true;
-        await usersUseCase.importUsers(file.value);
+        await userAdministrationUseCase.importUsers(file.value);
         uploading.value = false;
         await router.push({ name: Routes.UsersList });
     } catch (e) {

@@ -1,9 +1,18 @@
 import { AuthRestRepository, EventRestRepository, PositionRestRepository, UserRestRepository } from '@/adapter';
 import type { Application, AuthRepository, EventRepository, PositionRepository, UserRepository } from '@/application';
-import { AuthUseCase, EventUseCase, UsersUseCase } from '@/application';
+import {
+    AuthUseCase,
+    EventAdministrationUseCase,
+    EventCachingService,
+    EventUseCase,
+    PositionCachingService,
+    UserAdministrationUseCase,
+    UserCachingService,
+    UsersUseCase,
+} from '@/application';
 import { IndexedDB, IndexedDBRepository } from '@/common';
 import type { Domain } from '@/domain';
-import { EventService, UserService } from '@/domain';
+import { EventService, RegistrationService, UserService } from '@/domain';
 import { setupVue } from '@/ui';
 import { config } from './config';
 
@@ -25,6 +34,7 @@ const domain: Domain = {
     services: {
         users: new UserService(),
         events: new EventService(),
+        registrations: new RegistrationService(),
     },
 };
 
@@ -39,9 +49,31 @@ const eventRepository: EventRepository = new EventRestRepository();
 // -----------------------------------------------------
 // initialize use cases and application services
 // -----------------------------------------------------
+const eventCachingService = new EventCachingService({
+    cache: new IndexedDBRepository(indexedDB, StoreNames.Events, { invalidateOnReload: true }),
+    eventRepository: eventRepository,
+    authRepository: authRepository,
+});
+const userCachingService = new UserCachingService({
+    cache: new IndexedDBRepository(indexedDB, StoreNames.Users, {
+        invalidateOnReload: true,
+    }),
+    userRepository: userRepository,
+});
+const positionCachingService = new PositionCachingService({
+    cache: new IndexedDBRepository(indexedDB, StoreNames.Positions, {
+        invalidateOnReload: true,
+    }),
+    positionRepository: positionRepository,
+});
+
 const application: Application = {
     config: config,
-    services: {},
+    services: {
+        eventCache: eventCachingService,
+        userCache: userCachingService,
+        positionCache: positionCachingService,
+    },
     usecases: {
         auth: new AuthUseCase({
             authRepository: authRepository,
@@ -49,19 +81,21 @@ const application: Application = {
         events: new EventUseCase({
             eventRepository: eventRepository,
             authRepository: authRepository,
-            eventCache: new IndexedDBRepository(indexedDB, StoreNames.Events, {
-                invalidateOnReload: true,
-            }),
+            eventCachingService: eventCachingService,
         }),
         users: new UsersUseCase({
+            registrationService: domain.services.registrations,
             userRepository: userRepository,
-            positionRepository: positionRepository,
-            userCache: new IndexedDBRepository(indexedDB, StoreNames.Users, {
-                invalidateOnReload: true,
-            }),
-            positionCache: new IndexedDBRepository(indexedDB, StoreNames.Positions, {
-                invalidateOnReload: true,
-            }),
+            positionCachingService: positionCachingService,
+            userCachingService: userCachingService,
+        }),
+        userAdmin: new UserAdministrationUseCase({
+            userRepository: userRepository,
+            userCachingService: userCachingService,
+        }),
+        eventAdmin: new EventAdministrationUseCase({
+            eventRepository: eventRepository,
+            eventCachingService: eventCachingService,
         }),
     },
 };

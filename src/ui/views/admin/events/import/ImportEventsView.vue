@@ -55,13 +55,13 @@ import { useI18n } from 'vue-i18n';
 import { DateTimeFormat } from '@/common/date';
 import type { ImportError } from '@/domain';
 import { AsyncButton, VTable } from '@/ui/components/common';
-import { useEventUseCase } from '@/ui/composables/Application';
+import { useEventAdministrationUseCase } from '@/ui/composables/Application';
 
 interface InputFileEvent extends Event {
     target: HTMLInputElement;
 }
 
-const eventUseCase = useEventUseCase();
+const eventAdministrationUseCase = useEventAdministrationUseCase();
 const i18n = useI18n();
 
 const fileName = ref<string | null>(null);
@@ -86,6 +86,6 @@ async function upload() {
     if (!file.value) {
         return;
     }
-    errors.value = await eventUseCase.importEvents(2024, file.value);
+    errors.value = await eventAdministrationUseCase.importEvents(2024, file.value);
 }
 </script>

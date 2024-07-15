@@ -1,37 +1,31 @@
 import type { AuthRepository } from '@/application/ports/AuthRepository';
 import type { EventRepository } from '@/application/ports/EventRepository';
-import type { Cache } from '@/common';
+import type { EventCachingService } from '@/application/services/EventCachingService';
 import { DateFormatter } from '@/common/date';
-import type { Event, EventKey, ImportError, PositionKey, Registration, UserKey } from '@/domain';
+import type { Event, EventKey, PositionKey, UserKey } from '@/domain';
 
 export class EventUseCase {
+    private readonly eventCachingService: EventCachingService;
     private readonly eventRepository: EventRepository;
     private readonly authRepository: AuthRepository;
-    private readonly cache: Cache<EventKey, Event>;
 
     constructor(params: {
+        eventCachingService: EventCachingService;
         eventRepository: EventRepository;
         authRepository: AuthRepository;
-        eventCache: Cache<EventKey, Event>;
     }) {
+        this.eventCachingService = params.eventCachingService;
         this.eventRepository = params.eventRepository;
         this.authRepository = params.authRepository;
-        this.cache = params.eventCache;
     }
 
     public async getEvents(year: number): Promise<Event[]> {
-        let cached = await this.cache.findAll();
-        cached = cached
-            .filter((it) => it.start.getFullYear() === year)
-            .sort((a, b) => a.start.getTime() - b.start.getTime());
-        if (cached.length > 0) {
-            return cached;
-        }
-        return this.fetchEvents(year);
+        const events = await this.eventCachingService.getEvents(year);
+        return events.sort((a, b) => a.start.getTime() - b.start.getTime());
     }
 
     public async getEventByKey(year: number, eventKey: EventKey): Promise<Event> {
-        let event = await this.cache.findByKey(eventKey);
+        let event = await this.eventCachingService.getEventByKey(eventKey);
         if (event) {
             return event;
         }
@@ -44,26 +38,16 @@ export class EventUseCase {
     }
 
     public async getEventsByUser(year: number, userKey: UserKey): Promise<Event[]> {
-        const events = await this.getEvents(year);
+        const events = await this.eventCachingService.getEvents(year);
         return events.filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
     }
 
     public async getFutureEventsByUser(userKey: UserKey): Promise<Event[]> {
         const now = new Date();
-        const events = await this.getEvents(now.getFullYear());
+        const events = await this.eventCachingService.getEvents(now.getFullYear());
         return events
             .filter((evt) => evt.start > now)
             .filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
-    }
-
-    public async updateEvent(eventKey: EventKey, event: Partial<Event>): Promise<Event> {
-        const savedEvent = await this.eventRepository.updateEvent(eventKey, event);
-        return this.updateCache(savedEvent);
-    }
-
-    public async createEvent(event: Event): Promise<Event> {
-        const savedEvent = await this.eventRepository.createEvent(event);
-        return this.updateCache(savedEvent);
     }
 
     public async joinEvent(event: Event, positionKey: PositionKey): Promise<Event> {
@@ -73,14 +57,14 @@ export class EventUseCase {
         }
         try {
             const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
-            return this.updateCache(savedEvent);
+            return this.eventCachingService.updateCache(savedEvent);
         } catch (e) {
             const title = `Anmeldung: ${event.name} am ${DateFormatter.formatDate(event.start)}`;
             const message = `Moin liebes Büro Team,
 
-Ich möchte mich gerne für die Reise "${event.name}" am ${DateFormatter.formatDate(event.start)} auf die Warteliste setzen lassen. Kontaktiert mich gerne, wenn hier noch ein Platz frei ist oder wird.
+                Ich möchte mich gerne für die Reise "${event.name}" am ${DateFormatter.formatDate(event.start)} auf die Warteliste setzen lassen. Kontaktiert mich gerne, wenn hier noch ein Platz frei ist oder wird.
 
-Viele Grüße,`;
+                Viele Grüße,`;
             this.openEmail(title, message);
             return event;
         }
@@ -93,21 +77,17 @@ Viele Grüße,`;
         }
         try {
             const savedEvent = await this.eventRepository.leaveWaitingList(event.key, user.key);
-            return this.updateCache(savedEvent);
+            return this.eventCachingService.updateCache(savedEvent);
         } catch (e) {
             const title = `Absage: ${event.name} am ${DateFormatter.formatDate(event.start)}`;
             const message = `Moin liebes Büro Team,
 
-Leider kann ich an der Reise "${event.name}" am ${DateFormatter.formatDate(event.start)} nicht teilnehmen. Bitte streicht mich von der Crew Liste.
+                Leider kann ich an der Reise "${event.name}" am ${DateFormatter.formatDate(event.start)} nicht teilnehmen. Bitte streicht mich von der Crew Liste.
 
-Viele Grüße,`;
+                Viele Grüße,`;
             this.openEmail(title, message);
             return event;
         }
-    }
-
-    public async importEvents(year: number, file: Blob): Promise<ImportError[]> {
-        return this.eventRepository.importEvents(year, file);
     }
 
     public downloadCalendarEntry(event: Event): void {
@@ -148,28 +128,6 @@ Viele Grüße,`;
         } catch (e) {
             // ignore
         }
-    }
-
-    private async fetchEvents(year: number): Promise<Event[]> {
-        const events = await this.eventRepository.findAll(year);
-        const signedInUser = this.authRepository.getSignedInUser();
-        events.forEach((evt: Event) => {
-            const registration = evt.registrations.find((it: Registration) => it.userKey === signedInUser?.key);
-            if (registration?.slotKey) {
-                evt.signedInUserAssignedPosition = registration.positionKey;
-            } else if (registration) {
-                evt.signedInUserWaitingListPosition = registration.positionKey;
-            }
-        });
-        await this.cache.saveAll(events);
-        return events;
-    }
-
-    private async updateCache(event: Event): Promise<Event> {
-        if ((await this.cache.count()) > 0) {
-            return await this.cache.save(event);
-        }
-        return event;
     }
 
     private openEmail(subject: string, body: string): void {

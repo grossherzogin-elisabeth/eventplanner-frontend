@@ -218,7 +218,12 @@ import {
     VTable,
     VTabs,
 } from '@/ui/components/common';
-import { useAuthUseCase, useEventUseCase, useUsersUseCase } from '@/ui/composables/Application';
+import {
+    useAuthUseCase,
+    useEventUseCase,
+    useUserAdministrationUseCase,
+    useUsersUseCase,
+} from '@/ui/composables/Application';
 import { Routes } from '@/ui/views/Routes';
 
 enum Tab {
@@ -245,6 +250,7 @@ interface EventTableViewItem {
 
 const route = useRoute();
 const i18n = useI18n();
+const userAdministrationUseCase = useUserAdministrationUseCase();
 const usersUseCase = useUsersUseCase();
 const eventsUseCase = useEventUseCase();
 const authUseCase = useAuthUseCase();
@@ -268,7 +274,7 @@ function init(): void {
 
 async function fetchUser(): Promise<void> {
     const key = route.params.key as string;
-    user.value = await usersUseCase.getUserDetailsByKey(key);
+    user.value = await userAdministrationUseCase.getUserDetailsByKey(key);
 }
 
 async function fetchUserEvents(): Promise<void> {

@@ -1,5 +1,5 @@
 import type { AuthRepository } from '@/application';
-import type { Config } from '@/application/entities/Config';
+import type { Config } from '@/application/values/Config';
 import { Timer } from '@/common';
 import type { Permission, Role, SignedInUser } from '@/domain';
 

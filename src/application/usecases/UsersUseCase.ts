@@ -1,7 +1,6 @@
-import type { PositionRepository } from '@/application/ports/PositionRepository';
 import type { UserRepository } from '@/application/ports/UserRepository';
-import type { Cache } from '@/common';
-import { ArrayUtils } from '@/common';
+import type { PositionCachingService } from '@/application/services/PositionCachingService';
+import type { UserCachingService } from '@/application/services/UserCachingService';
 import type {
     Event,
     Position,
@@ -13,38 +12,32 @@ import type {
     UserDetails,
     UserKey,
 } from '@/domain';
+import type { RegistrationService } from '@/domain/services/RegistrationService';
 
 export class UsersUseCase {
     private readonly userRepository: UserRepository;
-    private readonly positionRepository: PositionRepository;
-    private readonly userCache: Cache<UserKey, User>;
-    private readonly positionCache: Cache<PositionKey, Position>;
+    private readonly registrationService: RegistrationService;
+    private readonly positionCachingService: PositionCachingService;
+    private readonly userCachingService: UserCachingService;
 
     constructor(params: {
         userRepository: UserRepository;
-        positionRepository: PositionRepository;
-        userCache: Cache<UserKey, User>;
-        positionCache: Cache<PositionKey, Position>;
+        registrationService: RegistrationService;
+        positionCachingService: PositionCachingService;
+        userCachingService: UserCachingService;
     }) {
         this.userRepository = params.userRepository;
-        this.positionRepository = params.positionRepository;
-        this.userCache = params.userCache;
-        this.positionCache = params.positionCache;
+        this.registrationService = params.registrationService;
+        this.positionCachingService = params.positionCachingService;
+        this.userCachingService = params.userCachingService;
     }
 
     public async getUserDetailsForSignedInUser(): Promise<UserDetails> {
         return await this.userRepository.findBySignedInUser();
     }
 
-    public async getUserDetailsByKey(key: UserKey): Promise<UserDetails> {
-        return await this.userRepository.findByKey(key);
-    }
-
     public async getUsers(keys?: UserKey[]): Promise<User[]> {
-        let users = await this.userCache.findAll();
-        if (users.length === 0) {
-            users = await this.fetchUsers();
-        }
+        let users = await this.userCachingService.getUsers();
         if (keys) {
             users = users.filter((it) => keys.includes(it.key));
         }
@@ -53,17 +46,9 @@ export class UsersUseCase {
         });
     }
 
-    public async getPositions(): Promise<Position[]> {
-        const cached = await this.positionCache.findAll();
-        if (cached.length > 0) {
-            return cached;
-        }
-        return this.fetchPositions();
-    }
-
     public async resolvePositionNames(): Promise<Map<PositionKey, Position>> {
         const map = new Map<PositionKey, Position>();
-        const positions = await this.getPositions();
+        const positions = await this.positionCachingService.getPositions();
         positions.forEach((it) => map.set(it.key, it));
         return map;
     }
@@ -78,94 +63,20 @@ export class UsersUseCase {
     public async resolveEventSlots(event: Event): Promise<ResolvedSlot[]> {
         const users = await this.getUsers();
         const positions = await this.resolvePositionNames();
-        return event.slots
-            .map((slot) => {
-                const registration = event.registrations.find((it) => it.slotKey === slot.key);
-                if (registration) {
-                    const userName = this.resolveRegistrationUserName(registration, users);
-                    const position = positions.get(registration.positionKey) || this.unknownPosition();
-                    return {
-                        ...slot,
-                        userName: userName,
-                        userKey: registration.userKey,
-                        registration: registration,
-                        position: position,
-                        positionName: slot.positionName || position.name,
-                        confirmed: false,
-                    };
-                }
-                const position = positions.get(slot.positionKeys[0]) || this.unknownPosition();
-                return {
-                    ...slot,
-                    userName: undefined,
-                    userKey: undefined,
-                    registration: registration,
-                    position: position,
-                    positionName: slot.positionName || position.name,
-                    confirmed: false,
-                };
-            })
-            .sort(
-                (a, b) =>
-                    b.position.prio - a.position.prio ||
-                    a.order - b.order ||
-                    a.userName?.localeCompare(b.userName || '') ||
-                    0
-            );
+        return this.registrationService.resolveRegistrationsWithAssignedSlots(event, users, positions);
     }
 
     public async resolveWaitingList(event: Event): Promise<ResolvedRegistration[]> {
         const users = await this.getUsers();
         const positions = await this.resolvePositionNames();
-        return event.registrations
-            .filter((registration) => !registration.slotKey)
-            .map(
-                (registration) =>
-                    ({
-                        ...registration,
-                        name: this.resolveRegistrationUserName(registration, users),
-                        position: positions.get(registration.positionKey) || this.unknownPosition(),
-                    }) as ResolvedRegistration
-            )
-            .filter(ArrayUtils.filterUndefined)
-            .sort((a, b) => b.position.prio - a.position.prio || a.name.localeCompare(b.name));
+        return this.registrationService.resolveRegistrationsOnWaitingList(event, users, positions);
     }
 
     public async resolveRegistrationUser(registration: Registration): Promise<User | undefined> {
         if (!registration.userKey) {
             return undefined;
         }
-        return await this.getUserDetailsByKey(registration.userKey);
-    }
-
-    public async importUsers(file: Blob): Promise<void> {
-        return this.userRepository.importUsers(file);
-    }
-
-    private unknownPosition(): Position {
-        return { key: '', name: '?', prio: 0, color: '' };
-    }
-
-    private resolveRegistrationUserName(registration: Registration, users: User[]): string {
-        if (!registration.userKey) {
-            return registration.name || '';
-        }
-        const user = users.find((user) => user.key === registration.userKey);
-        if (!user) {
-            return '';
-        }
-        return `${user.firstName} ${user.lastName}`.trim();
-    }
-
-    private async fetchPositions(): Promise<Position[]> {
-        const positions = await this.positionRepository.findAll();
-        await this.positionCache.saveAll(positions);
-        return positions;
-    }
-
-    private async fetchUsers(): Promise<User[]> {
-        const users = await this.userRepository.findAll();
-        await this.userCache.saveAll(users);
-        return users;
+        const users = await this.userCachingService.getUsers();
+        return users.find((it) => it.key === registration.userKey);
     }
 }
