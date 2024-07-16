@@ -39,7 +39,9 @@ export class EventUseCase {
 
     public async getEventsByUser(year: number, userKey: UserKey): Promise<Event[]> {
         const events = await this.eventCachingService.getEvents(year);
-        return events.filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
+        return events
+            .filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey))
+            .sort((a, b) => a.start.getTime() - b.start.getTime());
     }
 
     public async getFutureEventsByUser(userKey: UserKey): Promise<Event[]> {
