@@ -1,7 +1,13 @@
 .dialog {
-    @apply flex h-full w-full max-w-screen-lg flex-col overflow-hidden;
-    @apply lg:rounded-2xl lg:shadow-lg;
+    @apply flex flex-col overflow-hidden;
+    @apply sm:rounded-2xl sm:shadow-lg;
     @apply bg-gradient-to-br from-primary-50 from-50% to-primary-100;
+}
+
+@media (max-width: 639px) {
+    .dialog {
+        @apply h-screen w-screen max-h-screen !important;
+    }
 }
 
 .dialog-header {
@@ -19,7 +25,7 @@
 .dialog-background {
     --open-close-animation-duration: 0.25s;
     --dialog-open-background: rgba(0, 0, 0, 0.6);
-    @apply fixed bottom-0 left-0 right-0 top-0 z-30;
+    @apply fixed bottom-0 left-0 right-0 top-0 z-40;
     @apply flex items-center justify-center;
     animation: anim-dialog-background-close var(--open-close-animation-duration) ease-in;
     background-color: rgba(0, 0, 0, 0);

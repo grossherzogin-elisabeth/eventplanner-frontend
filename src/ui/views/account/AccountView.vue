@@ -107,16 +107,11 @@
                 </section>
             </template>
         </VTabs>
-        <div class="h-full overflow-y-auto px-8 pb-8 pt-4 md:px-16 xl:px-20">
-            <div class="max-w-2xl space-y-8 xl:space-y-16">
-                <div v-if="user" class="fixed bottom-0 right-0 flex justify-end pb-4 pr-3 xl:px-16">
-                    <button class="btn-primary btn-floating">
-                        <i class="fa-solid fa-save"></i>
-                        <span>Speichern</span>
-                    </button>
-                </div>
-                <div class="h-5"></div>
-            </div>
+        <div v-if="user" class="fixed bottom-0 right-0 flex justify-end pb-4 pr-3 md:pr-14 xl:hidden">
+            <button class="btn-primary btn-floating">
+                <i class="fa-solid fa-save"></i>
+                <span>Speichern</span>
+            </button>
         </div>
     </div>
 </template>

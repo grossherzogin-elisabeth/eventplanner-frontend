@@ -5,7 +5,7 @@
                 <div
                     :class="`
                         ${props.width || 'w-screen max-w-xl'}
-                        ${props.height || 'max-h-xl h-screen'}
+                        ${props.height || 'h-auto max-h-screen'}
                     `"
                     class="dialog"
                 >

@@ -1,9 +1,7 @@
 <template>
     <div class="flex h-full flex-1 flex-col xl:overflow-y-scroll">
         <div class="absolute left-6 top-6 z-20 hidden xl:block">
-            <RouterLink :to="{ name: Routes.Events }" class="btn-back">
-                <i class="fa-solid fa-arrow-left"></i>
-            </RouterLink>
+            <BackButton :to="{ name: Routes.Events }" />
         </div>
         <div
             class="sticky top-12 z-10 hidden items-center space-x-4 bg-primary-50 bg-opacity-80 px-8 pb-8 pt-8 backdrop-blur md:flex md:px-16 xl:top-0 xl:px-20"
@@ -273,6 +271,7 @@ import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Event, EventState, Permission, Position, PositionKey, ResolvedRegistration, ResolvedSlot } from '@/domain';
 import { ContextMenuButton } from '@/ui/components/common';
+import BackButton from '@/ui/components/utils/BackButton.vue';
 import CountryFlag from '@/ui/components/utils/CountryFlag.vue';
 import { useAuthUseCase, useEventUseCase, useUsersUseCase } from '@/ui/composables/Application';
 import { formatDateRange } from '@/ui/composables/DateRangeFormatter';

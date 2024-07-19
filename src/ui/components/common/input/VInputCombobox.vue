@@ -32,6 +32,7 @@
                             v-else
                             :class="focusOptionIndex === null ? 'rotate-0' : 'rotate-180'"
                             class="transition-transform"
+                            tabindex="-1"
                             @click="showDropdown()"
                         >
                             <i class="fa-solid fa-chevron-down text-sm text-primary-600"></i>
@@ -62,6 +63,7 @@
                 </slot>
                 <input
                     :id="id"
+                    ref="input"
                     :aria-disabled="props.disabled"
                     :aria-invalid="hasErrors"
                     :aria-required="props.required"
@@ -186,6 +188,7 @@ const hasErrors = computed<boolean>(() => props.errors !== undefined && props.er
 const list = ref<HTMLUListElement | null>(null);
 const dropdownAnchor = ref<HTMLInputElement | null>(null);
 const focusOptionIndex: Ref<number | null> = ref(null);
+const input = ref<HTMLInputElement | null>(null);
 const filter = ref('');
 
 const selectedOptionIndex = computed<number>(() =>
@@ -213,6 +216,7 @@ const displayValue = computed<string>(() => props.options.find((it) => it.value 
 function showDropdown(): void {
     focusOptionIndex.value = selectedOptionIndex.value;
     scrollFocussedOptionIntoView();
+    nextTick(() => input.value?.focus());
 }
 
 function onBlur(evt: FocusEvent): void {

@@ -18,7 +18,7 @@
             </button>
         </h2>
     </div>
-    <div class="px-8 py-4 md:px-16 md:py-8 xl:px-20">
+    <div v-if="$slots[props.modelValue]" class="px-8 py-4 md:px-16 md:py-8 xl:px-20">
         <template v-for="tab in props.tabs" :key="tab">
             <div v-show="tab === props.modelValue">
                 <slot :name="tab" :active="tab === props.modelValue" />

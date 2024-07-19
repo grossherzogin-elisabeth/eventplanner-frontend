@@ -26,7 +26,7 @@
                 </span>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-16">
+        <div class="grid grid-cols-2 gap-32">
             <div>
                 <h2 class="mb-4">Crew</h2>
                 <div v-if="dragSource === DragSource.FROM_WAITING_LIST" class="">

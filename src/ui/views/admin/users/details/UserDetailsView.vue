@@ -3,9 +3,7 @@
         <div class="bg-primary-50">
             <div class="z-10 flex items-center space-x-4 px-4 pb-4 pt-6 md:px-12 xl:px-20">
                 <div class="-ml-14 hidden xl:block">
-                    <RouterLink :to="{ name: Routes.UsersList }" class="btn-back">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </RouterLink>
+                    <BackButton :to="{ name: Routes.UsersList }" />
                 </div>
                 <div>
                     <h1>{{ user?.firstName }} {{ user?.lastName }} bearbeiten</h1>
@@ -218,6 +216,7 @@ import {
     VTable,
     VTabs,
 } from '@/ui/components/common';
+import BackButton from '@/ui/components/utils/BackButton.vue';
 import {
     useAuthUseCase,
     useEventUseCase,

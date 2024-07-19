@@ -32,6 +32,7 @@
                         v-else
                         :class="focusOptionIndex === null ? 'rotate-0' : 'rotate-180'"
                         class="transition-transform"
+                        tabindex="-1"
                         @click="showDropdown()"
                     >
                         <i class="fa-solid fa-chevron-down text-sm text-primary-600"></i>

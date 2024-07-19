@@ -1,7 +1,7 @@
 <template>
     <div class="flex h-full flex-1 flex-col xl:overflow-y-auto">
         <teleport to="#nav-right">
-            <NavbarFilter v-model="filter" placeholder="Nutzer durchsuchen" />
+            <NavbarFilter v-model="filter" placeholder="Events durchsuchen" />
         </teleport>
         <div
             class="top-12 z-10 hidden bg-primary-50 px-4 pb-8 pt-4 md:pl-12 md:pr-16 md:pt-8 xl:top-0 xl:block xl:pl-16 xl:pr-20"
@@ -24,24 +24,24 @@
                     </RouterLink>
                     <button class="btn-primary" @click="createEvent()">
                         <i class="fa-solid fa-calendar-plus"></i>
-                        <span>Reise erstellen</span>
+                        <span>Event erstellen</span>
                     </button>
                 </div>
             </div>
         </div>
-        <VTabs :tabs="tabs" v-model="tab"></VTabs>
+        <VTabs :tabs="tabs" v-model="tab" class="sticky top-12 bg-primary-50 pt-4" />
         <div class="w-full overflow-x-auto px-8 pt-6 md:px-16 xl:px-20 xl:pt-0">
             <div class="-mx-4 px-4">
                 <VTable :items="filteredEvents" :page-size="-1" class="">
                     <template #head>
                         <th class="w-1/2" data-sortby="name">Reise</th>
-                        <th class="w-1/6" data-sortby="duration"></th>
-                        <th class="w-1/6" data-sortby="duration">Anmeldungen</th>
-                        <th class="w-1/6" data-sortby="startDate">Datum</th>
-                        <th class="w-1/6" data-sortby="duration">Dauer</th>
+                        <th class="w-1/6" data-sortby="hasOpenRequiredSlots"></th>
+                        <th class="w-1/6" data-sortby="registrations">Anmeldungen</th>
+                        <th class="hidden w-1/6 md:table-cell" data-sortby="startDate">Datum</th>
+                        <th class="hidden w-1/6 md:table-cell" data-sortby="duration">Dauer</th>
                     </template>
                     <template #row="{ item }">
-                        <td class="w-full border-none font-semibold">
+                        <td class="w-full whitespace-nowrap border-none font-semibold">
                             <RouterLink
                                 :to="{
                                     name: Routes.EventEdit,
@@ -87,7 +87,14 @@
                 </VTable>
             </div>
         </div>
+        <div></div>
         <CreateEventDlg ref="createEventDlg" />
+        <div class="fixed bottom-0 right-0 flex justify-end pb-4 pr-3 md:pr-14 xl:hidden">
+            <button class="btn-primary btn-floating" @click="createEvent()">
+                <i class="fa-solid fa-calendar-plus"></i>
+                <span>Event erstellen</span>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -128,7 +135,7 @@ const i18n = useI18n();
 const user = authUseCase.getSignedInUser();
 
 const events = ref<EventTableViewItem[]>([]);
-const tab = ref<string>(String(new Date().getFullYear()));
+const tab = ref<string>('Zukünftige');
 const filter = ref<string>('');
 const createEventDlg = ref<Dialog<Event> | null>(null);
 

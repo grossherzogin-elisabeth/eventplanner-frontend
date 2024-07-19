@@ -17,7 +17,7 @@
                     @click="closeDialog()"
                 >
                     <div class="mx-auto flex h-full max-w-screen-lg items-start">
-                        <div class="dialog" @click.stop>
+                        <div class="dialog h-full w-full max-w-screen-lg" @click.stop>
                             <!-- dialog header -->
                             <div class="dialog-header">
                                 <div class="flex w-20 items-center justify-center lg:w-16">

@@ -1,10 +1,10 @@
 <template>
-    <VDialog ref="dlg">
+    <VDialog ref="dlg" height="max-h-screen h-auto">
         <template #title>
             <h1>Slot bearbeiten</h1>
         </template>
         <template #default>
-            <div v-if="eventSlot" class="p-8 lg:px-16">
+            <div v-if="eventSlot" class="flex flex-1 flex-col p-8 lg:px-16">
                 <p class="mb-8 max-w-lg">
                     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
                     labore et dolore magna aliquyam erat, sed diam voluptua.
