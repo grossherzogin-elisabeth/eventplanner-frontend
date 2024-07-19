@@ -49,7 +49,7 @@
     <VDropdownWrapper
         v-if="focusOptionIndex !== null"
         :anchor="dropdownAnchor"
-        anchor-align-y="bottom"
+        anchor-align-y="top"
         class="input-dropdown"
         max-height="300px"
         min-width="50px"

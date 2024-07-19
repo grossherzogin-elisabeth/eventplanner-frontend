@@ -3,17 +3,17 @@
         <VTabs v-model="tab" :tabs="tabs" class="sticky top-12 z-10 bg-primary-50 pt-4 xl:top-0">
             <template #[Tab.ACCOUNT_DATA]>
                 <section v-if="userDetails" class="-mx-4">
-                    <div class="mb-2 md:w-1/2">
+                    <div class="mb-2 hidden md:w-1/2">
                         <VInputLabel>Geschlecht</VInputLabel>
                         <VInputSelect v-model="user.gender" :options="genderOptions" required />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Vorname</VInputLabel>
-                        <VInputText v-model="userDetails.firstName" required />
+                        <VInputText v-model="userDetails.firstName" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Nachname</VInputLabel>
-                        <VInputText v-model="userDetails.lastName" required />
+                        <VInputText v-model="userDetails.lastName" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Geboren am</VInputLabel>
@@ -25,7 +25,17 @@
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Pass Nummer</VInputLabel>
-                        <VInputText v-model="userDetails.passNr" required />
+                        <VInputText v-model="userDetails.passNr" required disabled />
+                    </div>
+                    <div class="mt-8 rounded-xl bg-primary-100 p-4 text-sm md:w-1/2">
+                        <h2 class="mb-2">Hinweis zum Daten ändern:</h2>
+                        <p>
+                            Aktuell kannst du deine Daten noch nicht direkt hier in der App ändern. Bitte kontaktiere
+                            dafür vorerst weiterhin das Büro unter
+                            <a class="text-primary-600" href="mailto:office@grossherzogin-elisabeth.de">
+                                office@grossherzogin-elisabeth.de </a
+                            >.
+                        </p>
                     </div>
                 </section>
             </template>
@@ -33,33 +43,43 @@
                 <section v-if="userDetails" class="-mx-4">
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Email</VInputLabel>
-                        <VInputText v-model="userDetails.email" required />
+                        <VInputText v-model="userDetails.email" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Straße, Hausnr</VInputLabel>
-                        <VInputText v-model="userDetails.address.addressLine1" required />
+                        <VInputText v-model="userDetails.address.addressLine1" required disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Adresszusatz</VInputLabel>
-                        <VInputText v-model="userDetails.address.addressLine2" />
+                        <VInputText v-model="userDetails.address.addressLine2" disabled />
                     </div>
                     <div class="flex space-x-4 md:w-1/2">
                         <div class="mb-2 w-24">
                             <VInputLabel>PLZ</VInputLabel>
-                            <VInputText v-model="userDetails.address.zipcode" required />
+                            <VInputText v-model="userDetails.address.zipcode" required disabled />
                         </div>
                         <div class="mb-2 flex-grow">
                             <VInputLabel>Ort</VInputLabel>
-                            <VInputText v-model="userDetails.address.town" required />
+                            <VInputText v-model="userDetails.address.town" required disabled />
                         </div>
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Telefon</VInputLabel>
-                        <VInputText v-model="userDetails.phone" />
+                        <VInputText v-model="userDetails.phone" disabled />
                     </div>
                     <div class="mb-2 md:w-1/2">
                         <VInputLabel>Mobil</VInputLabel>
-                        <VInputText v-model="userDetails.mobile" />
+                        <VInputText v-model="userDetails.mobile" disabled />
+                    </div>
+                    <div class="mt-8 rounded-xl bg-primary-100 p-4 text-sm md:w-1/2">
+                        <h2 class="mb-2">Hinweis zum Daten ändern:</h2>
+                        <p>
+                            Aktuell kannst du deine Daten noch nicht direkt hier in der App ändern. Bitte kontaktiere
+                            dafür vorerst weiterhin das Büro unter
+                            <a class="text-primary-600" href="mailto:office@grossherzogin-elisabeth.de">
+                                office@grossherzogin-elisabeth.de </a
+                            >.
+                        </p>
                     </div>
                 </section>
             </template>

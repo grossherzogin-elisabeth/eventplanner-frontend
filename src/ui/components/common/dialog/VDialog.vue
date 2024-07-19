@@ -9,13 +9,18 @@
                     `"
                     class="dialog"
                 >
-                    <div class="dialog-header">
-                        <div class="flex flex-grow items-center">
+                    <div class="dialog-header pl-8 lg:pl-16">
+                        <div class="flex flex-grow items-center pt-4">
                             <slot name="title"></slot>
                         </div>
-                        <button class="dialog-close-button" @click="reject()">
-                            <IconClose class="h-full w-full" />
-                        </button>
+                        <div class="flex w-20 items-center justify-center lg:w-16">
+                            <button
+                                class="h-10 w-10 rounded-full text-gray-700 hover:bg-primary-200 hover:text-gray-950"
+                                @click="reject()"
+                            >
+                                <i class="fa-solid fa-close"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="dialog-content flex flex-1 flex-col overflow-y-auto">
                         <slot name="content"></slot>
@@ -34,7 +39,7 @@
 import type { Ref } from 'vue';
 import { nextTick, ref } from 'vue';
 import { WindowUtils } from '@/common';
-import { IconClose } from '@/ui/icons/regular';
+import type { Dialog } from './Dialog';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type T = any; // Result type
@@ -122,33 +127,5 @@ async function close<T>(): Promise<void> {
         emit('closed');
         WindowUtils.enableScrolling();
     }, 400);
-}
-</script>
-
-<script lang="ts">
-// fake default export for typescript
-export default {};
-
-// Type definition for exposed functions
-export interface Dialog<T = void, E = void> {
-    /**
-     * Open this dialog, returning a promise that is resolve when it is closed
-     */
-    open(): Promise<T>;
-
-    /**
-     * Close this dialog, resulting in the rejection of the open promise
-     */
-    close(): void;
-
-    /**
-     * Submit an optional positive result and close the dialog resolving the promise
-     */
-    submit(result?: T): void;
-
-    /**
-     * Submit an optional negative result and close the dialog rejecting the promise
-     */
-    reject(reason?: E): void;
 }
 </script>

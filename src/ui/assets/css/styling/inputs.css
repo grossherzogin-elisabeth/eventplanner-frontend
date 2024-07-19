@@ -7,7 +7,7 @@
 @import '@/ui/assets/css/lib/input-textarea.css';
 
 .input-field-wrapper {
-    @apply h-full overflow-hidden rounded-lg border-b border-primary-400 bg-primary-100;
+    @apply h-full overflow-hidden rounded-lg border border-primary-300 bg-primary-100;
 }
 
 .input-search .input-field-wrapper {
@@ -33,11 +33,11 @@
 }
 
 .input-field-wrapper:not(.disabled):hover {
-    @apply border-b border-primary-500 bg-primary-100;
+    @apply border border-primary-400 bg-primary-200;
 }
 
 .input-field-wrapper:focus-within {
-    @apply border-b border-primary-300 bg-primary-100;
+    @apply border border-primary-400 bg-primary-100;
 }
 
 .input-field-wrapper input {
@@ -62,19 +62,19 @@
 
 .input-dropdown,
 .input-datepicker-dropdown {
-    @apply mt-1 rounded-lg border-none bg-primary-200 shadow-xl;
+    @apply rounded-lg border border-primary-400 bg-primary-100 shadow-xl;
 }
 
 .input-dropdown li {
-    @apply py-2 pl-4;
+    @apply py-4 pl-4;
 }
 
 .input-dropdown li.input-dropdown-option:hover {
-    @apply bg-primary-300;
+    @apply bg-primary-200;
 }
 
 .input-dropdown li.input-dropdown-option-focus {
-    @apply bg-primary-300;
+    @apply bg-primary-200 text-primary-700;
 }
 
 .input-label {
@@ -83,7 +83,7 @@
 }
 
 .input-datepicker-dropdown .vuejs3-datepicker__calendar {
-    @apply bg-primary-200;
+    @apply rounded-lg border border-primary-400 bg-primary-100;
 }
 
 .input-datepicker-dropdown {

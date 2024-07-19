@@ -73,20 +73,11 @@
                     <div class="mb-4">
                         <p class="flex items-center space-x-4">
                             <i class="fa-solid fa-calendar-day w-4 text-gray-700"></i>
-                            <span v-if="formatDate(props.event.start) === formatDate(props.event.end)">
-                                {{ formatDate(props.event.start) }}
-                            </span>
-                            <span v-else>
-                                {{ formatDate(props.event.start) }} - {{ formatDate(props.event.end) }}
-                            </span>
+                            <span>{{ formatDateRange(props.event.start, props.event.end) }}</span>
                         </p>
                         <p class="flex items-center space-x-4">
                             <i class="fa-solid fa-clock w-4 text-gray-700"></i>
                             <span>Crew an Board: 16:00 Uhr</span>
-                        </p>
-                        <p class="flex items-center space-x-4">
-                            <i class="fa-solid fa-route w-4 text-gray-700"></i>
-                            <span>300 Seemeilen (geschätzt)</span>
                         </p>
                         <p v-if="props.event.description" class="flex items-center space-x-4">
                             <i class="fa-solid fa-info-circle w-4 text-gray-700"></i>
@@ -131,11 +122,11 @@
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { DateTimeFormat } from '@/common/date';
 import type { Event } from '@/domain';
 import { EventState } from '@/domain';
 import { VDropdownWrapper } from '@/ui/components/common';
 import CountryFlag from '@/ui/components/utils/CountryFlag.vue';
+import { formatDateRange } from '@/ui/composables/DateRangeFormatter';
 import { Routes } from '@/ui/views/Routes';
 
 interface Props {
@@ -159,17 +150,13 @@ function init(): void {
     );
 }
 
-function formatDate(date: Date): string {
-    return i18n.d(date, DateTimeFormat.Date);
-}
-
 init();
 </script>
 
 <style scoped>
 .calendar-event-wrapper {
     @apply absolute left-0 right-0 top-px z-10;
-    @apply rounded-lg bg-white;
+    @apply rounded-lg bg-white hover:shadow-xl;
     @apply overflow-hidden;
 }
 
@@ -177,8 +164,8 @@ init();
     @apply block h-full w-full px-4 py-1 text-white sm:px-2;
     @apply cursor-pointer;
     @apply text-sm font-semibold;
-    --color-1: rgb(255 255 255 / 0.4);
-    --color-2: rgb(255 255 255 / 0.25);
+    --color-1: rgb(255 255 255 / 0.6);
+    --color-2: rgb(255 255 255 / 0.2);
     --pattern: linear-gradient(
         135deg,
         var(--color-1) 25%,
@@ -193,8 +180,8 @@ init();
 }
 
 .calendar-event-entry {
-    @apply bg-blue-400 bg-opacity-75;
-    @apply bg-primary-700 bg-opacity-75;
+    @apply border-l-8 border-blue-400 bg-blue-200 hover:bg-blue-300;
+    @apply text-blue-900 shadow-xl;
 }
 
 .calendar-event-entry.full {
@@ -202,15 +189,18 @@ init();
 }
 
 .calendar-event-entry.assigned {
-    @apply bg-green-700 bg-opacity-75;
+    @apply border-l-8 border-green-700 bg-green-200 hover:bg-green-300;
+    @apply text-green-900;
 }
 
 .calendar-event-entry.work {
-    @apply bg-indigo-400 bg-opacity-75;
+    @apply border-l-8 border-indigo-700 bg-indigo-200 hover:bg-indigo-300;
+    @apply text-indigo-900;
 }
 
 .calendar-event-entry.waiting-list {
-    @apply bg-green-700 bg-opacity-75;
+    @apply border-l-8 border-green-700 bg-green-200 hover:bg-green-300;
+    @apply text-green-900;
     background-image: var(--pattern);
 }
 
@@ -220,6 +210,7 @@ init();
 }
 
 .calendar-event-entry.in-past {
-    @apply bg-primary-800 bg-opacity-35;
+    @apply border-l-8 border-gray-300 bg-gray-200 hover:bg-gray-300;
+    @apply text-gray-600 shadow-xl;
 }
 </style>

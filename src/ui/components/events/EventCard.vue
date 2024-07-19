@@ -68,6 +68,6 @@ const props = defineProps<Props>();
 const i18n = useI18n();
 
 function formatDate(date: Date): string {
-    return i18n.d(date, DateTimeFormat.Date);
+    return i18n.d(date, DateTimeFormat.DD_MM_YYYY);
 }
 </script>

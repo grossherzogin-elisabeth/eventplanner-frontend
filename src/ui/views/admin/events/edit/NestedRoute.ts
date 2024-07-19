@@ -8,7 +8,6 @@ const routeMeta: RouteMetaData = {
     authenticated: true,
     permissions: [Permission.WRITE_EVENTS],
     backTo: Routes.EventsAdmin,
-    breadcrumps: (route) => ['Reisen', String(route?.params?.year), 'Reise bearbeiten'],
 };
 
 const route: RouteRecordRaw = {

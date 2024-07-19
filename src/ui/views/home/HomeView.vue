@@ -72,7 +72,7 @@ const filteredEvents = computed<Event[]>(() =>
 
 const eventsByMonth = computed<Map<string, Event[]>>(() =>
     filteredEvents.value.reduce((map, it) => {
-        let groupName = i18n.d(it.start, DateTimeFormat.MonthAndYear);
+        let groupName = i18n.d(it.start, DateTimeFormat.MMMM_YYYY);
         if (isThisMonth(it.start)) {
             groupName = 'Diesen Monat';
         } else if (isNextMonth(it.start)) {

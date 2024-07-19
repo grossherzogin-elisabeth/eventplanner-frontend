@@ -12,6 +12,7 @@ export enum Routes {
     EventsAdmin = 'app_events-admin',
     EventDetails = 'app_event-details',
     EventEdit = 'app_event-edit',
+    EventEditSlot = 'app_event-edit-slot',
     EventsImport = 'app_events-import',
 
     UsersList = 'app_users',

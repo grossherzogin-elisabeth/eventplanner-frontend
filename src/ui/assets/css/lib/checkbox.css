@@ -3,8 +3,8 @@
 /* --------------------------------------------------------------- */
 
 .check-box-container {
-    @apply inline-block;
-    background-color: white;
+    @apply inline-block rounded-lg;
+    @apply bg-primary-50 border-primary-300 text-primary-700;
     @apply border;
     @apply cursor-pointer;
     outline: none;

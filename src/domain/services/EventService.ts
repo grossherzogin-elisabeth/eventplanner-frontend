@@ -137,4 +137,10 @@ export class EventService {
         }
         return event;
     }
+
+    public updateSlot(event: Event, slot: Slot): Event {
+        const index = event.slots.findIndex((it) => it.key === slot.key);
+        event.slots[index] = slot;
+        return event;
+    }
 }

@@ -69,7 +69,7 @@ const file = ref<Blob | null>(null);
 const errors = ref<ImportError[] | null>(null);
 
 function formatDate(date?: Date): string {
-    return date !== undefined ? i18n.d(date, DateTimeFormat.Date) : '';
+    return date !== undefined ? i18n.d(date, DateTimeFormat.DD_MM_YYYY) : '';
 }
 
 function chooseFile(evt: InputFileEvent): void {

@@ -89,8 +89,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { DateUtils, Month } from '@/common/date';
-import type { Event } from '@/domain';
-import { EventQuickFilter } from '@/domain';
+import { Event, EventQuickFilter, EventType } from '@/domain';
 import { ContextMenuButton } from '@/ui/components/common';
 import { useEventService } from '@/ui/composables/Domain';
 import { DateTimeFormat } from '@/ui/model/DateTimeFormat';
@@ -249,8 +248,7 @@ function fillEvents(): void {
         if (calendarDayEvent.durationInMonth < 1) {
             calendarDayEvent.class += ' small';
         }
-        // TODO add category
-        if (event.name.toLowerCase().includes('arbeitsdienst')) {
+        if (event.type === EventType.WorkEvent) {
             calendarDayEvent.class += ' work';
         }
 

@@ -1,8 +1,9 @@
 export enum DateTimeFormat {
-    Date = 'date',
-    ShortDate = 'date-short',
-    MonthAndYear = 'month-year',
-    WeekdayShort = 'weekday-short',
+    DD_MM_YYYY = 'DD.MM.YYYY',
+    DD_MM = 'DD.MM.',
+    DDD_DD_MM = 'DDD DD.MM.',
+    DDD_DD_MM_YYYY = 'DDD DD.MM.YYYY',
+    MMMM_YYYY = 'MMMM YYYY',
 }
 
 export class DateFormatter {

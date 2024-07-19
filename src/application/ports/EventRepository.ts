@@ -9,7 +9,7 @@ export interface EventRepository {
 
     importEvents(year: number, file: Blob): Promise<ImportError[]>;
 
-    joinWaitingList(eventKey: EventKey, userKey: UserKey, positionKey: PositionKey): Promise<Event>;
+    joinEvent(eventKey: EventKey, userKey: UserKey, positionKey: PositionKey): Promise<Event>;
 
-    leaveWaitingList(eventKey: EventKey, userKey: UserKey): Promise<Event>;
+    leaveEvent(eventKey: EventKey, userKey: UserKey): Promise<Event>;
 }

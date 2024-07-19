@@ -11,7 +11,7 @@
             <div class="w-0 flex-grow">
                 <h1 class="mb-2 w-full truncate">{{ event?.name }}</h1>
                 <p class="text-sm font-semibold text-gray-500">
-                    {{ formatDate(event?.start) }} - {{ formatDate(event?.end) }}
+                    {{ formatDateRange(event?.start, event?.end) }}
                 </p>
             </div>
             <div v-if="event" class="flex items-stretch justify-end space-x-2">
@@ -104,14 +104,14 @@
                 <h2 class="mb-2 ml-4 lg:ml-8">
                     {{ $t('app.event-details.title') }}
                 </h2>
-                <div class="rounded-2xl bg-primary-100 p-4 lg:px-8">
+                <div class="space-y-1 rounded-2xl bg-primary-100 p-4 lg:px-8">
                     <p class="flex items-center space-x-4">
                         <i class="fa-solid fa-tag w-4 text-gray-700"></i>
                         <span>{{ event.name }}</span>
                     </p>
                     <p class="flex items-center space-x-4">
                         <i class="fa-solid fa-calendar-day w-4 text-gray-700"></i>
-                        <span>{{ formatDate(event.start) }} - {{ formatDate(event.end) }}</span>
+                        <span>{{ formatDateRange(event.start, event.end) }}</span>
                     </p>
                     <p class="flex items-center space-x-4">
                         <i class="fa-solid fa-clock w-4 text-gray-700"></i>
@@ -138,8 +138,9 @@
 
             <!-- route -->
             <section class="-mx-4 md:col-start-2 xl:mx-0">
-                <h2 class="mb-2 ml-4 lg:ml-8">Route</h2>
-                <div class="rounded-2xl bg-primary-100 p-4 lg:px-8">
+                <h2 v-if="event.locations.length === 1" class="mb-2 ml-4 lg:ml-8">Ort</h2>
+                <h2 v-else class="mb-2 ml-4 lg:ml-8">Route</h2>
+                <div class="space-y-1 rounded-2xl bg-primary-100 p-4 lg:px-8">
                     <div v-if="event.locations.length === 0">
                         <i>Wird noch bekannt gegeben</i>
                     </div>
@@ -158,17 +159,20 @@
 
             <!-- crew -->
             <section class="col-start-1 row-span-6 -mx-4 md:row-start-1 md:mx-0">
-                <h2 class="mb-2 ml-4 flex space-x-4 md:mb-6 md:ml-0">
-                    <button :class="{ 'text-primary-600': tab === Tab.Team }" @click="tab = Tab.Team">
+                <h2 v-if="event.state !== EventState.OpenForSignup" class="mb-2 ml-4 flex space-x-4 md:mb-6 md:ml-0">
+                    <button :class="{ 'text-primary-600 underline': tab === Tab.Team }" @click="tab = Tab.Team">
                         Crew ({{ event.assignedUserCount }})
                     </button>
-                    <button :class="{ 'text-primary-600': tab === Tab.WaitingList }" @click="tab = Tab.WaitingList">
+                    <button
+                        :class="{ 'text-primary-600 underline': tab === Tab.WaitingList }"
+                        @click="tab = Tab.WaitingList"
+                    >
                         Warteliste ({{ waitingListCount }})
                     </button>
                 </h2>
-                <!--                <h2 v-else class="text-sm font-semibold mb-4 ml-4 md:ml-0">-->
-                <!--                    <span>Crew ({{ event.assignedUserCount }})</span>-->
-                <!--                </h2>-->
+                <h2 v-else class="mb-2 ml-4 flex space-x-4 md:mb-6 md:ml-0">
+                    <span>Anmeldungen</span>
+                </h2>
                 <div class="rounded-2xl bg-primary-100 p-4 md:rounded-none md:bg-transparent md:p-0">
                     <template v-if="tab === Tab.Team">
                         <ul class="space-y-2">
@@ -176,7 +180,14 @@
                                 <li class="flex items-center space-x-2 md:space-x-4">
                                     <i v-if="it.userName" class="fa-solid fa-user-circle text-gray-500"></i>
                                     <i v-else class="fa-solid fa-user-circle text-red-500"></i>
-                                    <span v-if="it.userName" class="truncate">{{ it.userName }}</span>
+                                    <RouterLink
+                                        v-if="it.userName && user.permissions.includes(Permission.READ_USER_DETAILS)"
+                                        :to="{ name: Routes.UserDetails, params: { key: it.userKey } }"
+                                        class="truncate"
+                                    >
+                                        {{ it.userName }}
+                                    </RouterLink>
+                                    <span v-else-if="it.userName" class="truncate">{{ it.userName }}</span>
                                     <span v-else-if="it.userKey" class="italic text-red-500"
                                         >err: {{ it.userKey }}</span
                                     >
@@ -204,6 +215,15 @@
                                 </span>
                             </li>
                         </ul>
+                        <div
+                            v-if="waitingList.length === 0"
+                            class="-mx-4 -mt-4 rounded-xl bg-primary-100 p-4 text-sm lg:-mx-8 lg:px-8"
+                        >
+                            <p v-if="event.state === EventState.OpenForSignup">
+                                Für diesen Termin gibt es noch keine Anmeldungen.
+                            </p>
+                            <p v-else>Für diesen Termin gibt es keine Anmeldungen auf der Warteliste.</p>
+                        </div>
                     </template>
                 </div>
             </section>
@@ -251,12 +271,11 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { DateTimeFormat } from '@/common/date';
-import type { Event, Position, PositionKey, ResolvedRegistration, ResolvedSlot } from '@/domain';
-import { EventState, Permission } from '@/domain';
+import { Event, EventState, Permission, Position, PositionKey, ResolvedRegistration, ResolvedSlot } from '@/domain';
 import { ContextMenuButton } from '@/ui/components/common';
 import CountryFlag from '@/ui/components/utils/CountryFlag.vue';
 import { useAuthUseCase, useEventUseCase, useUsersUseCase } from '@/ui/composables/Application';
+import { formatDateRange } from '@/ui/composables/DateRangeFormatter';
 import { Routes } from '@/ui/views/Routes';
 
 interface State {
@@ -325,10 +344,6 @@ function init(): void {
     fetchEvent();
 }
 
-function formatDate(date?: Date): string {
-    return date !== undefined ? i18n.d(date, DateTimeFormat.Date) : '';
-}
-
 async function fetchPositions(): Promise<void> {
     position.value = await usersUseCase.resolvePositionNames();
 }
@@ -337,6 +352,9 @@ async function fetchEvent(): Promise<void> {
     const key = route.params.key as string;
     const year = parseInt(route.params.year as string, 10) || new Date().getFullYear();
     event.value = await eventUseCase.getEventByKey(year, key);
+    if (event.value.state === EventState.OpenForSignup) {
+        tab.value = Tab.WaitingList;
+    }
     await fetchTeam(event.value);
 }
 

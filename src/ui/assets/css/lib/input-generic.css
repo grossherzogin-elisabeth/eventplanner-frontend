@@ -8,10 +8,9 @@
 
 .input-field {
     @apply w-full py-2.5 pl-4;
-    background-color: white;
-    @apply border;
-    @apply border-solid;
-    outline: none;
+    @apply border-none;
+    @apply bg-transparent;
+    @apply outline-none focus:outline-none;
 }
 
 .input-field:disabled {

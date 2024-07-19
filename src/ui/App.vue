@@ -17,12 +17,9 @@
                     @click="closeDialog()"
                 >
                     <div class="mx-auto flex h-full max-w-screen-lg items-start">
-                        <div
-                            class="flex h-full w-full max-w-screen-lg flex-col overflow-hidden bg-white lg:rounded-2xl lg:shadow-lg"
-                            @click.stop
-                        >
+                        <div class="dialog" @click.stop>
                             <!-- dialog header -->
-                            <div class="bg-dialog-header flex h-16 w-full items-center justify-between">
+                            <div class="dialog-header">
                                 <div class="flex w-20 items-center justify-center lg:w-16">
                                     <button
                                         v-if="dialogStack.length > 1"
@@ -31,18 +28,6 @@
                                     >
                                         <i class="fa-solid fa-arrow-left"></i>
                                     </button>
-                                </div>
-                                <div
-                                    v-if="(route.meta as any).breadcrumps"
-                                    class="flex-grow text-sm font-semibold text-gray-400"
-                                >
-                                    <template
-                                        v-for="breadcrump in (route.meta as any).breadcrumps(route)"
-                                        :key="breadcrump"
-                                    >
-                                        <span class="">{{ breadcrump }}</span>
-                                        <i class="fa-solid fa-chevron-right mx-4 h-3 last:hidden"></i>
-                                    </template>
                                 </div>
                                 <div class="flex w-20 items-center justify-center lg:w-16">
                                     <button

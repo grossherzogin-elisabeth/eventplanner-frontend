@@ -2,6 +2,7 @@ export { default as AsyncButton } from './buttons/AsyncButton.vue';
 export { default as ContextMenuButton } from './buttons/ContextMenuButton.vue';
 export { default as VCollapsiblePane } from './collapsible/VCollapsiblePane.vue';
 export { default as VDialog } from './dialog/VDialog.vue';
+export type { Dialog } from './dialog/Dialog';
 export { default as VDropdownWrapper } from './dropdown/VDropdownWrapper.vue';
 export { default as VInputCheckBox } from './input/VInputCheckBox.vue';
 export { default as VInputCombobox } from './input/VInputCombobox.vue';

@@ -58,7 +58,7 @@ export class EventUseCase {
             throw new Error('401');
         }
         try {
-            const savedEvent = await this.eventRepository.joinWaitingList(event.key, user.key, positionKey);
+            const savedEvent = await this.eventRepository.joinEvent(event.key, user.key, positionKey);
             return this.eventCachingService.updateCache(savedEvent);
         } catch (e) {
             const title = `Anmeldung: ${event.name} am ${DateFormatter.formatDate(event.start)}`;
@@ -78,7 +78,7 @@ export class EventUseCase {
             throw new Error('401');
         }
         try {
-            const savedEvent = await this.eventRepository.leaveWaitingList(event.key, user.key);
+            const savedEvent = await this.eventRepository.leaveEvent(event.key, user.key);
             return this.eventCachingService.updateCache(savedEvent);
         } catch (e) {
             const title = `Absage: ${event.name} am ${DateFormatter.formatDate(event.start)}`;

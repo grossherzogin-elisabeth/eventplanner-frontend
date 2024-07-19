@@ -56,9 +56,9 @@
         @close="hideDropdown(true)"
     >
         <div class="flex h-full flex-col overflow-hidden">
-            <div class="flex items-stretch border-b border-gray-500">
+            <div class="flex items-stretch border-b border-primary-300">
                 <slot name="before-filter">
-                    <IconSearch class="ml-3 mr-2 h-4 w-4 self-center opacity-50" />
+                    <i class="fa-solid fa-search mx-4 self-center text-sm opacity-50" />
                 </slot>
                 <input
                     :id="id"
@@ -71,7 +71,7 @@
                     :required="props.required"
                     :value="focusOptionIndex === null ? displayValue : filter"
                     aria-haspopup="true"
-                    class="input-field w-full overflow-ellipsis"
+                    class="w-full overflow-ellipsis bg-transparent py-3 placeholder-primary-900 placeholder-opacity-50"
                     @blur="onBlur"
                     @click="showDropdown()"
                     @input="filterValues($event)"
@@ -81,8 +81,8 @@
                     @keydown.esc="hideDropdown(true)"
                 />
                 <slot name="after-filter">
-                    <button v-if="filter" class="flex items-center self-stretch" @click.stop="filter = ''">
-                        <IconRemoveCircle class="mr-2 h-4 w-4 opacity-75 hover:opacity-100" />
+                    <button v-if="filter" class="flex items-center self-stretch pr-4" @click.stop="filter = ''">
+                        <i class="fa-solid fa-xmark-circle opacity-75 hover:opacity-100"></i>
                     </button>
                 </slot>
             </div>
@@ -138,8 +138,6 @@ import { computed, nextTick, ref } from 'vue';
 import type { InputSelectOption, ValidationHint } from '@/domain';
 import { VLoadingSpinner } from '@/ui/components/common';
 import VDropdownWrapper from '@/ui/components/common/dropdown/VDropdownWrapper.vue';
-import { IconRemoveCircle } from '@/ui/icons/bold';
-import { IconSearch } from '@/ui/icons/light';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Props {

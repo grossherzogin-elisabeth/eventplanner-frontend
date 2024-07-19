@@ -1,11 +1,11 @@
 .dialog {
-    @apply flex flex-col shadow;
-    background-color: white;
+    @apply flex h-full w-full max-w-screen-lg flex-col overflow-hidden;
+    @apply lg:rounded-2xl lg:shadow-lg;
+    @apply bg-gradient-to-br from-primary-50 from-50% to-primary-100;
 }
 
 .dialog-header {
-    @apply flex items-center justify-between px-8 py-4 text-white;
-    background-color: gray;
+    @apply flex h-16 w-full items-center justify-between;
 }
 
 .dialog-close-button {
@@ -13,8 +13,7 @@
 }
 
 .dialog-buttons {
-    @apply flex justify-end space-x-4 px-8 py-4;
-    background-color: white;
+    @apply flex justify-end space-x-4 px-8 lg:px-16 py-4;
 }
 
 .dialog-background {

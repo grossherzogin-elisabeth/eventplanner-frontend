@@ -43,7 +43,7 @@
         <VDropdownWrapper
             v-if="showDropdown"
             :anchor="dropdownAnchor"
-            anchor-align-y="bottom"
+            anchor-align-y="top"
             class="input-datepicker-dropdown"
             max-height="100vh"
             max-width="100vw"

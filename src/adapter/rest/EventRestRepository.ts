@@ -1,7 +1,6 @@
 import { getCsrfToken } from '@/adapter/util/Csrf';
 import type { EventRepository } from '@/application';
-import type { Event, EventKey, ImportError, PositionKey, UserKey } from '@/domain';
-import { EventState } from '@/domain';
+import { Event, EventKey, EventState, EventType, ImportError, PositionKey, UserKey } from '@/domain';
 
 interface SlotRepresentation {
     key: string;
@@ -36,6 +35,33 @@ interface EventRepresentation {
     registrations: RegistrationRepresentation[];
 }
 
+interface EventCreateRequest {
+    state: string;
+    name: string;
+    description: string;
+    start: string;
+    end: string;
+    locations: LocationRepresentation[];
+    slots: SlotRepresentation[];
+    registrations: RegistrationRepresentation[];
+}
+
+interface EventUpdateRequest {
+    state?: string;
+    name?: string;
+    description?: string;
+    start?: string;
+    end?: string;
+    locations?: LocationRepresentation[];
+    slots?: SlotRepresentation[];
+    registrations?: RegistrationRepresentation[];
+}
+
+interface JoinEventRequest {
+    teamMemberKey: string;
+    positionKey: string;
+}
+
 interface ImportErrorRepresentation {
     eventKey: string;
     eventName: string;
@@ -48,6 +74,7 @@ export class EventRestRepository implements EventRepository {
     private static mapEventToDomain(eventRepresentation: EventRepresentation): Event {
         return {
             key: eventRepresentation.key,
+            type: EventType.VOYAGE,
             name: eventRepresentation.name,
             description: eventRepresentation.description,
             state: eventRepresentation.state as EventState,
@@ -72,14 +99,6 @@ export class EventRestRepository implements EventRepository {
             })),
             assignedUserCount: eventRepresentation.registrations.filter((it) => it.slotKey).length,
         };
-    }
-
-    private static parseDate(date: string): Date {
-        // js cannot parse an ISO date time like 2024-06-25T00:00+02:00[Europe/Berlin]
-        if (date.includes('[')) {
-            return new Date(date.substring(0, date.indexOf('[')));
-        }
-        return new Date(date);
     }
 
     public async findAll(year: number): Promise<Event[]> {
@@ -141,24 +160,99 @@ export class EventRestRepository implements EventRepository {
         return [...map.values()].sort((a, b) => b.start.getTime() - a.start.getTime());
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async createEvent(event: Event): Promise<Event> {
-        throw new Error('Diese Funktion ist noch nicht implementiert.');
+        const requestBody: EventCreateRequest = {
+            state: event.state,
+            name: event.name,
+            description: event.description,
+            start: event.start?.toISOString(),
+            end: event.end?.toISOString(),
+            locations: event.locations,
+            slots: event.slots,
+            registrations: event.registrations,
+        };
+        const response = await fetch(`/api/v1/events`, {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        });
+        if (!response.ok) {
+            throw response;
+        }
+        const responseData: EventRepresentation = await response.clone().json();
+        return EventRestRepository.mapEventToDomain(responseData);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async joinWaitingList(eventKey: EventKey, teamMemberKey: UserKey, positionKey: PositionKey): Promise<Event> {
-        throw new Error('Diese Funktion ist noch nicht implementiert. Bitte melde dich vorerst weiterhin im Büro.');
+    public async joinEvent(eventKey: EventKey, teamMemberKey: UserKey, positionKey: PositionKey): Promise<Event> {
+        const requestBody: JoinEventRequest = {
+            teamMemberKey: teamMemberKey,
+            positionKey: positionKey,
+        };
+        const response = await fetch(`/api/v1/events/${eventKey}/registrations`, {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        });
+        if (!response.ok) {
+            throw response;
+        }
+        const responseData: EventRepresentation = await response.clone().json();
+        return EventRestRepository.mapEventToDomain(responseData);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async leaveWaitingList(eventKey: EventKey, teamMemberKey: UserKey): Promise<Event> {
-        throw new Error('Diese Funktion ist noch nicht implementiert. Bitte melde dich vorerst weiterhin im Büro.');
+    public async leaveEvent(eventKey: EventKey, teamMemberKey: UserKey): Promise<Event> {
+        const response = await fetch(`/api/v1/events/${eventKey}/registrations/${teamMemberKey}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        });
+        if (!response.ok) {
+            throw response;
+        }
+        const responseData: EventRepresentation = await response.clone().json();
+        return EventRestRepository.mapEventToDomain(responseData);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async updateEvent(eventKey: EventKey, updateRequest: Partial<Event>): Promise<Event> {
-        throw new Error('Diese Funktion ist noch nicht implementiert.');
+        const requestBody: EventUpdateRequest = {
+            state: updateRequest.state,
+            name: updateRequest.name,
+            description: updateRequest.description,
+            start: updateRequest.start?.toISOString(),
+            end: updateRequest.end?.toISOString(),
+            locations: updateRequest.locations,
+            slots: updateRequest.slots,
+            registrations: updateRequest.registrations,
+        };
+        const response = await fetch(`/api/v1/events/${eventKey}`, {
+            method: 'PUT',
+            credentials: 'include',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        });
+        if (!response.ok) {
+            throw response;
+        }
+        const responseData: EventRepresentation = await response.clone().json();
+        return EventRestRepository.mapEventToDomain(responseData);
+    }
+
+    private static parseDate(date: string): Date {
+        // js cannot parse an ISO date time like 2024-06-25T00:00+02:00[Europe/Berlin]
+        if (date.includes('[')) {
+            return new Date(date.substring(0, date.indexOf('[')));
+        }
+        return new Date(date);
     }
 
     private generateWorkEvent(date: Date): Event {
@@ -169,6 +263,7 @@ export class EventRestRepository implements EventRepository {
         return {
             key: 'arbeitsdienst_' + date.toDateString(),
             state: EventState.OpenForSignup,
+            type: EventType.WorkEvent,
             name: 'Arbeitsdienst',
             description: '',
             start: start,

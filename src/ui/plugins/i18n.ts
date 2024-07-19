@@ -5,22 +5,30 @@ import { DateTimeFormat } from '@/common/date';
 import messagesDe from '@/ui/locales/de.json';
 
 const datetimeFormatsDe: { [key: string]: DateTimeOptions } = {};
-datetimeFormatsDe[DateTimeFormat.Date] = {
+datetimeFormatsDe[DateTimeFormat.DD_MM_YYYY] = {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
 };
-datetimeFormatsDe[DateTimeFormat.ShortDate] = {
+datetimeFormatsDe[DateTimeFormat.DD_MM] = {
     month: '2-digit',
     day: '2-digit',
     weekday: 'short',
 };
-datetimeFormatsDe[DateTimeFormat.MonthAndYear] = {
+datetimeFormatsDe[DateTimeFormat.DDD_DD_MM] = {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+};
+datetimeFormatsDe[DateTimeFormat.DDD_DD_MM_YYYY] = {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+};
+datetimeFormatsDe[DateTimeFormat.MMMM_YYYY] = {
     month: 'long',
     year: 'numeric',
-};
-datetimeFormatsDe[DateTimeFormat.WeekdayShort] = {
-    weekday: 'short',
 };
 
 export function setupI18n(config: Config): I18n {

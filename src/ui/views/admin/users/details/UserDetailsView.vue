@@ -291,9 +291,9 @@ async function fetchUserEvents(): Promise<void> {
                 return {
                     eventKey: evt.key,
                     name: evt.name,
-                    start: i18n.d(evt.start, DateTimeFormat.Date),
+                    start: i18n.d(evt.start, DateTimeFormat.DD_MM_YYYY),
                     startDate: evt.start,
-                    end: i18n.d(evt.end, DateTimeFormat.Date),
+                    end: i18n.d(evt.end, DateTimeFormat.DD_MM_YYYY),
                     endDate: evt.end,
                     duration: new Date(evt.end.getTime() - evt.start.getTime()).getDate(),
                     position: position,

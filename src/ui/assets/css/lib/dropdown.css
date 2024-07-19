@@ -21,7 +21,6 @@
     @apply shadow;
     @apply border;
     @apply flex-1 overflow-y-auto;
-    background-color: white;
 }
 
 .input-dropdown li {

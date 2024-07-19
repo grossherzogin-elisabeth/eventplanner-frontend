@@ -11,6 +11,7 @@ export * from './entities/Certificate';
 export * from './values/Location';
 export * from './values/EventQuickFilter';
 export * from './values/EventState';
+export * from './values/EventType';
 export * from './values/ImportError';
 export * from './values/Permission';
 export * from './values/Role';
