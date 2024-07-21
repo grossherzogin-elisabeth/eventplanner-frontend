@@ -6,8 +6,8 @@
         <template #default>
             <div v-if="eventSlot" class="flex flex-1 flex-col p-8 lg:px-16">
                 <p class="mb-8 max-w-lg">
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                    labore et dolore magna aliquyam erat, sed diam voluptua.
+                    Du kannst den Slot für diese Reise ohne Auswirkungen auf andere Reisen anpassen. Bereits zugwiesene
+                    Crewmitglieder bleiben diesem Slot zugewiesen, auch wenn du die Positionen dann nicht mehr passen.
                 </p>
                 <div class="-mx-4 mb-2">
                     <VInputLabel>Position</VInputLabel>

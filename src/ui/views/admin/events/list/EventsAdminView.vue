@@ -31,8 +31,8 @@
         </div>
         <VTabs :tabs="tabs" v-model="tab" class="sticky top-12 bg-primary-50 pt-4" />
         <div class="w-full overflow-x-auto px-8 pt-6 md:px-16 xl:px-20 xl:pt-0">
-            <div class="-mx-4 px-4">
-                <VTable :items="filteredEvents" :page-size="-1" class="">
+            <div class="-mx-4 px-4 pt-4">
+                <VTable :items="filteredEvents" :page-size="-1" class="interactive-table">
                     <template #head>
                         <th class="w-1/2" data-sortby="name">Reise</th>
                         <th class="w-1/6" data-sortby="hasOpenRequiredSlots"></th>

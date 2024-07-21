@@ -143,4 +143,11 @@ export class EventService {
         event.slots[index] = slot;
         return event;
     }
+
+    public isSlotFilled(event: Event | null | undefined, slotkey: SlotKey): boolean {
+        if (!event) {
+            return false;
+        }
+        return event.registrations.filter((it) => it.slotKey === slotkey).length > 0;
+    }
 }

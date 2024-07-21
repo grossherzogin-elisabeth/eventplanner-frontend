@@ -1,17 +1,12 @@
 <template>
     <div class="flex h-full flex-1 flex-col xl:overflow-y-scroll">
         <div class="absolute left-6 top-6 z-20 hidden xl:block">
-            <RouterLink
-                :to="{ name: Routes.EventsAdmin }"
-                class="flex items-center justify-center rounded-full p-3 hover:bg-primary-100"
-            >
-                <i class="fa-solid fa-arrow-left"></i>
-            </RouterLink>
+            <BackButton :to="{ name: Routes.EventsAdmin }" />
         </div>
         <div class="bg-primary-50">
             <div class="z-10 flex items-center space-x-4 px-8 pb-4 pt-6 md:px-16 xl:px-20">
-                <div>
-                    <h1>{{ event?.name }} bearbeiten</h1>
+                <div class="w-full overflow-hidden">
+                    <h1 class="truncate">{{ event?.name }}</h1>
                     <p class="mt-1 text-sm">{{ formatDate(event?.start) }}</p>
                 </div>
                 <div class="flex-grow"></div>
@@ -39,7 +34,7 @@
         </div>
 
         <!-- tabs -->
-        <VTabs v-model="tab" :tabs="tabs" class="sticky top-0 z-10 bg-primary-50 pt-4">
+        <VTabs v-model="tab" :tabs="tabs" class="sticky top-10 z-10 bg-primary-50 pt-4 xl:top-0">
             <template #[Tab.EVENT_DATA]>
                 <div class="max-w-2xl space-y-8 xl:space-y-16">
                     <section v-if="event" class="-mx-4">
@@ -102,56 +97,71 @@
                 <div>TODO</div>
             </template>
             <template #[Tab.EVENT_SLOTS]>
-                <VTable :items="slots" :page-size="-1" @click="editSlot($event.key)" class="interactive-table">
-                    <template #head>
-                        <th></th>
-                        <th>Prio</th>
-                        <th>Name</th>
-                        <th>Mögliche Positionen</th>
-                        <th>Erforderlich</th>
-                    </template>
-                    <template #row="{ item, index }">
-                        <td>
-                            <button class="cursor-move">
-                                <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
-                            </button>
-                        </td>
-                        <td>{{ index + 1 }}</td>
-                        <td>
-                            <span class="font-semibold">
-                                {{ item.name || item.position.name }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="flex flex-wrap items-center">
-                                <div
-                                    v-for="position in item.alternativePositions"
-                                    :key="position.key"
-                                    :style="{ background: position.color }"
-                                    class="position mb-1 mr-1"
+                <div class="-mx-8 overflow-y-auto px-4">
+                    <VTable :items="slots" :page-size="-1" @click="editSlot($event.key)" class="interactive-table">
+                        <template #head>
+                            <th class="hidden w-0 md:table-cell"></th>
+                            <th class="w-0"></th>
+                            <th class="w-1/3">Name</th>
+                            <th class="w-2/3">Mögliche Positionen</th>
+                            <th class="w-64">Status</th>
+                        </template>
+                        <template #row="{ item, index }">
+                            <td class="hidden md:table-cell">
+                                <button class="cursor-move">
+                                    <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <span
+                                    class="inline-block rounded-full bg-gray-200 px-2 py-1 text-sm font-semibold text-gray-700"
                                 >
-                                    <span>{{ position.name }}</span>
+                                    #{{ index + 1 }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="whitespace-nowrap font-semibold">
+                                    {{ item.name || item.position.name }}
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span
-                                v-if="item.required"
-                                class="inline-flex w-auto items-center rounded-full bg-yellow-100 py-1 pl-3 pr-4 text-yellow-700"
-                            >
-                                <i class="fa-solid fa-circle"></i>
-                                <span class="ml-2 whitespace-nowrap font-semibold">Erforderlich</span>
-                            </span>
-                            <span
-                                v-else
-                                class="inline-flex w-auto items-center rounded-full bg-green-100 py-1 pl-3 pr-4 text-green-700"
-                            >
-                                <i class="fa-solid fa-circle-half-stroke"></i>
-                                <span class="ml-2 whitespace-nowrap font-semibold">Optional</span>
-                            </span>
-                        </td>
-                    </template>
-                </VTable>
+                            </td>
+                            <td class="">
+                                <div class="flex items-center">
+                                    <div
+                                        v-for="position in item.alternativePositions"
+                                        :key="position.key"
+                                        :style="{ background: position.color }"
+                                        class="position mb-1 mr-1"
+                                    >
+                                        <span>{{ position.name }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="">
+                                <span
+                                    v-if="item.filled"
+                                    class="inline-flex w-auto items-center rounded-full bg-green-100 py-1 pl-3 pr-4 text-green-700"
+                                >
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span class="ml-2 whitespace-nowrap font-semibold">Besetzt</span>
+                                </span>
+                                <span
+                                    v-else-if="item.required"
+                                    class="inline-flex w-auto items-center rounded-full bg-yellow-100 py-1 pl-3 pr-4 text-yellow-700"
+                                >
+                                    <i class="fa-solid fa-warning"></i>
+                                    <span class="ml-2 whitespace-nowrap font-semibold">Nicht besetzt</span>
+                                </span>
+                                <span
+                                    v-else
+                                    class="inline-flex w-auto items-center rounded-full bg-blue-100 py-1 pl-3 pr-4 text-blue-700"
+                                >
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span class="ml-2 whitespace-nowrap font-semibold">Optional</span>
+                                </span>
+                            </td>
+                        </template>
+                    </VTable>
+                </div>
                 <EditEventSlotDlg ref="editSlotDialog" />
             </template>
         </VTabs>
@@ -160,7 +170,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ArrayUtils } from '@/common';
 import { DateTimeFormat } from '@/common/date';
@@ -177,6 +187,7 @@ import {
 } from '@/ui/components/common';
 import CrewEditor from '@/ui/components/events/CrewEditor.vue';
 import EditEventSlotDlg from '@/ui/components/events/EditEventSlotDlg.vue';
+import BackButton from '@/ui/components/utils/BackButton.vue';
 import { useAuthUseCase, useEventUseCase, useUsersUseCase } from '@/ui/composables/Application';
 import { useEventService } from '@/ui/composables/Domain';
 import { Routes } from '@/ui/views/Routes';
@@ -194,11 +205,11 @@ interface SlotTableItem {
     required: boolean;
     position: Position;
     alternativePositions: Position[];
+    filled: boolean;
 }
 
 const i18n = useI18n();
 const route = useRoute();
-const router = useRouter();
 const eventService = useEventService();
 const eventUseCase = useEventUseCase();
 const usersUseCase = useUsersUseCase();
@@ -221,6 +232,7 @@ const slots = computed<SlotTableItem[]>(() => {
         required: slot.required,
         position: positions.value.get(slot.positionKeys[0])!,
         alternativePositions: slot.positionKeys.map((it) => positions.value.get(it)).filter(ArrayUtils.filterUndefined),
+        filled: eventService.isSlotFilled(event.value, slot.key),
     }));
 });
 

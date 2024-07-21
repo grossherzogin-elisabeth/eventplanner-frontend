@@ -34,5 +34,5 @@
 }
 
 .v-table.interactive-table tbody tr {
-    @apply cursor-pointer hover:bg-primary-50;
+    @apply cursor-pointer hover:bg-primary-100;
 }

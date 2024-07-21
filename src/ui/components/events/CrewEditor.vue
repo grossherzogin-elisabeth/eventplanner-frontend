@@ -1,33 +1,35 @@
 <template>
-    <div>
+    <div class="">
         <!-- position counters -->
-        <div class="mb-8 flex flex-wrap gap-2 text-sm font-bold text-white">
-            <div class="flex cursor-pointer items-center rounded-2xl bg-gray-500 p-1">
-                <span class="px-2"> Alle </span>
-                <span
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-white bg-opacity-25 px-1 text-center text-xs"
+        <div class="-mx-8 mb-4 overflow-x-auto px-8 pb-4">
+            <div class="flex gap-2 text-sm font-bold text-white lg:flex-wrap">
+                <div class="flex cursor-pointer items-center rounded-2xl bg-gray-500 p-1">
+                    <span class="px-2"> Alle </span>
+                    <span
+                        class="flex h-5 w-5 items-center justify-center rounded-full bg-white bg-opacity-25 px-1 text-center text-xs"
+                    >
+                        {{ props.event?.assignedUserCount }}
+                    </span>
+                </div>
+                <div
+                    v-for="(count, key) in summary"
+                    :key="key"
+                    :style="{ 'background-color': position.get(key)?.color }"
+                    class="flex cursor-pointer items-center rounded-2xl p-1"
                 >
-                    {{ props.event?.assignedUserCount }}
-                </span>
-            </div>
-            <div
-                v-for="(count, key) in summary"
-                :key="key"
-                :style="{ 'background-color': position.get(key)?.color }"
-                class="flex cursor-pointer items-center rounded-2xl p-1"
-            >
-                <span class="px-2">
-                    {{ position.get(key)?.name }}
-                </span>
-                <span
-                    class="flex h-5 w-5 items-center justify-center rounded-full bg-white bg-opacity-25 px-1 text-center text-xs"
-                >
-                    {{ count }}
-                </span>
+                    <span class="px-2">
+                        {{ position.get(key)?.name }}
+                    </span>
+                    <span
+                        class="flex h-5 w-5 items-center justify-center rounded-full bg-white bg-opacity-25 px-1 text-center text-xs"
+                    >
+                        {{ count }}
+                    </span>
+                </div>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-32">
-            <div>
+        <div class="grid gap-x-32 gap-y-8 lg:grid-cols-2">
+            <div class="">
                 <h2 class="mb-4">Crew</h2>
                 <div v-if="dragSource === DragSource.FROM_WAITING_LIST" class="">
                     <div
@@ -43,12 +45,12 @@
                         <li
                             :class="{ 'cursor-move': it.userName !== undefined }"
                             :draggable="it.userName !== undefined"
-                            class="flex items-center space-x-2 rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
+                            class="flex items-center rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
                             @dragend="dragSource = DragSource.NONE"
                             @dragstart="handleDragStartFromTeam($event, it)"
                         >
-                            <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
-                            <span v-if="it.userName && !it.confirmed">
+                            <i class="fa-solid fa-grip-vertical hidden text-sm opacity-25 lg:inline"></i>
+                            <span v-if="it.userName && !it.confirmed" class="">
                                 <i class="fa-solid fa-user-clock text-gray-400"></i>
                             </span>
                             <span v-else-if="it.userName && it.confirmed">
@@ -57,19 +59,24 @@
                             <span v-else>
                                 <i class="fa-solid fa-user-xmark text-red-500"></i>
                             </span>
-                            <span v-if="it.userName" class="truncate">{{ it.userName }}</span>
-                            <span v-else-if="it.userKey" class="italic text-red-500">err: {{ it.userKey }}</span>
-                            <span v-else class="truncate italic text-red-500">Noch nicht besetzt</span>
-                            <span v-if="it.userName && !it.userKey" class="">(Gastcrew)</span>
-                            <span class="flex-grow"></span>
-                            <span :style="{ background: it.position.color }" class="position ml-auto">
+                            <span v-if="it.userName" class="mx-2 w-0 flex-grow truncate">
+                                {{ it.userName }}
+                                <template v-if="it.userName && !it.userKey"> (Gastcrew) </template>
+                            </span>
+                            <span v-else-if="it.userKey" class="mx-2 w-0 flex-grow truncate italic text-red-500">
+                                err: {{ it.userKey }}
+                            </span>
+                            <span v-else class="mx-2 w-0 flex-grow truncate truncate italic text-red-500">
+                                Noch nicht besetzt
+                            </span>
+                            <span :style="{ background: it.position.color }" class="position">
                                 {{ it.positionName }}
                             </span>
                         </li>
                     </template>
                 </ul>
             </div>
-            <div>
+            <div class="">
                 <h2 class="mb-4">Warteliste</h2>
                 <div v-if="dragSource === DragSource.FROM_TEAM" class="space-y-8">
                     <div
@@ -90,16 +97,17 @@
                 <ul v-else class="-mx-4">
                     <template v-for="(it, index) in registrations" :key="index">
                         <li
-                            class="flex cursor-move items-center space-x-2 rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
+                            class="flex cursor-move items-center rounded-xl px-4 py-2 hover:bg-primary-100 md:space-x-4"
                             draggable="true"
                             @dragend="dragSource = DragSource.NONE"
                             @dragstart="handleDragStartFromWaitinglist($event, it)"
                         >
-                            <i class="fa-solid fa-grip-vertical text-sm opacity-25"></i>
-                            <span v-if="it.name" class="truncate">{{ it.name }}</span>
-                            <span v-else-if="it.userKey" class="italic text-red-500"> err: {{ it.userKey }} </span>
-                            <span class="flex-grow"></span>
-                            <span :style="{ background: it.position.color }" class="position ml-auto">
+                            <i class="fa-solid fa-grip-vertical mr-2 hidden text-sm opacity-25 lg:inline"></i>
+                            <span v-if="it.name" class="w-0 flex-grow truncate">{{ it.name }}</span>
+                            <span v-else-if="it.userKey" class="w-0 flex-grow italic text-red-500">
+                                err: {{ it.userKey }}
+                            </span>
+                            <span :style="{ background: it.position.color }" class="position">
                                 {{ it.position.name }}
                             </span>
                         </li>
@@ -228,6 +236,7 @@ async function handleDragStopCancelRegistration(dragEvent: DragEvent) {
         } else if (slot.userName) {
             emit('update:event', eventService.cancelGuestRegistration(props.event, slot.userName));
         }
+        await fetchTeam();
     }
 }
 
