@@ -32,7 +32,7 @@
         <VTabs :tabs="tabs" v-model="tab" class="sticky top-12 bg-primary-50 pt-4" />
         <div class="w-full overflow-x-auto px-8 pt-6 md:px-16 xl:px-20 xl:pt-0">
             <div class="-mx-4 px-4 pt-4">
-                <VTable :items="filteredEvents" :page-size="-1" class="interactive-table">
+                <VTable :items="filteredEvents" :page-size="-1" class="interactive-table" @click="editEvent($event)">
                     <template #head>
                         <th class="w-1/2" data-sortby="name">Reise</th>
                         <th class="w-1/6" data-sortby="hasOpenRequiredSlots"></th>
@@ -42,15 +42,9 @@
                     </template>
                     <template #row="{ item }">
                         <td class="w-full whitespace-nowrap border-none font-semibold">
-                            <RouterLink
-                                :to="{
-                                    name: Routes.EventEdit,
-                                    params: { year: item.startDate.getFullYear(), key: item.eventKey },
-                                }"
-                                class="hover:text-primary-600"
-                            >
+                            <span class="hover:text-primary-600">
                                 {{ item.name }}
-                            </RouterLink>
+                            </span>
                             <p class="text-sm font-light">{{ item.locations }}</p>
                         </td>
                         <td>
@@ -100,7 +94,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ArrayUtils } from '@/common';
 import { DateTimeFormat } from '@/common/date';
@@ -131,6 +125,7 @@ interface EventTableViewItem {
 const eventUseCase = useEventUseCase();
 const authUseCase = useAuthUseCase();
 const route = useRoute();
+const router = useRouter();
 const i18n = useI18n();
 const user = authUseCase.getSignedInUser();
 
@@ -139,7 +134,7 @@ const tab = ref<string>('Zukünftige');
 const filter = ref<string>('');
 const createEventDlg = ref<Dialog<Event> | null>(null);
 
-const filteredEvents = computed(() => {
+const filteredEvents = computed<EventTableViewItem[]>(() => {
     const f = filter.value.toLowerCase();
     return events.value.filter((it) => it.name.toLowerCase().includes(f));
 });
@@ -205,6 +200,13 @@ function hasOpenRequiredSlots(event: Event): boolean {
     const filledSlotKeys = event.registrations.map((it) => it.slotKey).filter(ArrayUtils.filterUndefined);
     const openRequiredSlots = event.slots.filter((it) => it.required).filter((it) => !filledSlotKeys.includes(it.key));
     return openRequiredSlots.length > 0;
+}
+
+async function editEvent(evt: EventTableViewItem): Promise<void> {
+    await router.push({
+        name: Routes.EventEdit,
+        params: { year: evt.startDate.getFullYear(), key: evt.eventKey },
+    });
 }
 
 async function createEvent(): Promise<void> {

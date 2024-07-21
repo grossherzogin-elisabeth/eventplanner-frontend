@@ -20,7 +20,7 @@
                     <div
                         v-for="d in m[1]"
                         :key="d.dayOfMonth"
-                        :class="{ weekend: d.isWeekend, holiday: d.isHoliday }"
+                        :class="{ weekend: d.isWeekend, holiday: d.isHoliday, today: d.isToday }"
                         class="calendar-day"
                     >
                         <div class="calendar-day-label">{{ d.weekday }}</div>
@@ -88,11 +88,10 @@
 <script lang="ts" setup>
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { DateUtils, Month } from '@/common/date';
+import { DateTimeFormat, DateUtils, Month } from '@/common/date';
 import { Event, EventQuickFilter, EventType } from '@/domain';
 import { ContextMenuButton } from '@/ui/components/common';
 import { useEventService } from '@/ui/composables/Domain';
-import { DateTimeFormat } from '@/ui/model/DateTimeFormat';
 import { isHoliday } from 'feiertagejs';
 import EventCalendarItem from './EventCalendarItem.vue';
 
@@ -109,6 +108,7 @@ interface CalendarDay {
     weekday: string;
     isHoliday: boolean;
     isWeekend: boolean;
+    isToday: boolean;
     events: CalendarDayEvent[];
 }
 
@@ -178,6 +178,7 @@ async function updateCalendarWith(): Promise<void> {
 
 function buildCalender(year: number): void {
     let date = new Date(year, Month.JANUARY, 1);
+    const today = new Date();
     const temp: Map<Month, CalendarDay[]> = new Map<Month, CalendarDay[]>();
     while (date.getFullYear() === year) {
         if (!temp.has(date.getMonth())) {
@@ -185,9 +186,13 @@ function buildCalender(year: number): void {
         }
         temp.get(date.getMonth())?.push({
             dayOfMonth: date.getDate(),
-            weekday: i18n.d(date, DateTimeFormat.WeekdayShort),
+            weekday: i18n.d(date, DateTimeFormat.DDD),
             isHoliday: isHoliday(date, 'NI'),
             isWeekend: date.getDay() === 0 || date.getDay() === 6,
+            isToday:
+                date.getDate() === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear(),
             events: [],
         });
         date = DateUtils.add(date, { days: 1 });
@@ -345,11 +350,20 @@ init();
 }
 
 .calendar-day.weekend {
-    @apply bg-gray-500 bg-opacity-5 text-red-500;
+    @apply rounded-lg bg-gray-500 bg-opacity-5 text-red-500;
 }
 
 .calendar-day.holiday {
-    @apply bg-gray-500 bg-opacity-5 text-red-500;
+    @apply rounded-lg bg-gray-500 bg-opacity-5 text-red-500;
+}
+
+.calendar-day.today {
+    @apply relative;
+}
+
+.calendar-day.today:after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 top-0 z-10 rounded-lg border-2 border-red-500 border-opacity-25;
 }
 
 @media only screen and (min-width: 450px) {

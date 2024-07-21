@@ -14,7 +14,7 @@
         min-width="18rem"
         @close="open = false"
     >
-        <div class="mt-2 rounded-xl bg-primary-200 p-4 shadow-xl" @click="open = false">
+        <div class="mt-2 rounded-xl bg-primary-100 p-4 shadow-xl" @click="open = false">
             <slot />
         </div>
     </VDropdownWrapper>

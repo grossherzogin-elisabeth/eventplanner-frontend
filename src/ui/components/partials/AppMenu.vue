@@ -40,7 +40,7 @@
             <li v-if="user.permissions.includes(Permission.READ_USER_DETAILS)" class="menu-item">
                 <RouterLink :to="{ name: Routes.UsersList }">
                     <i class="fa-solid fa-users"></i>
-                    <span>Nutzerverwaltung</span>
+                    <span>Nutzer verwalten</span>
                 </RouterLink>
             </li>
             <li class="menu-item hidden">

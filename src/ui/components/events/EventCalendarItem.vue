@@ -194,7 +194,7 @@ init();
     @apply text-blue-900 shadow-xl;
 }
 
-.calendar-event-entry.full {
+.calendar-event-entry:not(.in-past).full {
     background-image: var(--pattern);
 }
 
@@ -220,7 +220,7 @@ init();
 }
 
 .calendar-event-entry.in-past {
-    @apply border-l-8 border-gray-300 bg-gray-200 hover:bg-gray-300;
+    @apply border-l-8 border-gray-400 bg-gray-200 bg-opacity-75 hover:bg-gray-300;
     @apply text-gray-600 shadow-xl;
 }
 </style>

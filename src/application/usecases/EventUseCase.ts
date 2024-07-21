@@ -49,7 +49,8 @@ export class EventUseCase {
         const events = await this.eventCachingService.getEvents(now.getFullYear());
         return events
             .filter((evt) => evt.start > now)
-            .filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey));
+            .filter((evt) => evt.registrations.find((reg) => reg.userKey === userKey))
+            .sort((a, b) => a.start.getTime() - b.start.getTime());
     }
 
     public async joinEvent(event: Event, positionKey: PositionKey): Promise<Event> {

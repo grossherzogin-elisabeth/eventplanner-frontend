@@ -13,6 +13,7 @@
 @import 'styling/scrollbar.css';
 
 @import 'domain/role.css';
+@import 'domain/event.css';
 
 html {
     box-sizing: border-box;

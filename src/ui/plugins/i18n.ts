@@ -10,6 +10,9 @@ datetimeFormatsDe[DateTimeFormat.DD_MM_YYYY] = {
     month: '2-digit',
     day: '2-digit',
 };
+datetimeFormatsDe[DateTimeFormat.DDD] = {
+    weekday: 'short',
+};
 datetimeFormatsDe[DateTimeFormat.DD_MM] = {
     month: '2-digit',
     day: '2-digit',
