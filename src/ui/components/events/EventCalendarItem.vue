@@ -7,7 +7,7 @@
         }"
         class="calendar-event-wrapper"
     >
-        <div :class="`${$attrs.class}`" class="calendar-event-entry" @click="showDropdown = true">
+        <div :class="`${$attrs.class}`" class="calendar-event-entry" @click="showDetails()">
             <div class="flex items-center space-x-2">
                 <span :title="props.event.name" class="block w-full truncate">
                     {{ props.event.name }}
@@ -120,8 +120,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 import type { Event } from '@/domain';
 import { EventState } from '@/domain';
 import { VDropdownWrapper } from '@/ui/components/common';
@@ -138,8 +137,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const i18n = useI18n();
 const route = useRoute();
+const router = useRouter();
 
 const showDropdown = ref<boolean>(false);
 
@@ -148,6 +147,17 @@ function init(): void {
         () => route.fullPath,
         () => (showDropdown.value = false)
     );
+}
+
+function showDetails(): void {
+    if (window.innerWidth < 640) {
+        router.push({
+            name: Routes.EventDetails,
+            params: { year: props.event.start.getFullYear(), key: props.event.key },
+        });
+    } else {
+        showDropdown.value = true;
+    }
 }
 
 init();
